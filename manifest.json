@@ -1,0 +1,15 @@
+{
+  "name": "BRAVO! en français",
+  "short_name": "BRAVO!",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#E60000",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

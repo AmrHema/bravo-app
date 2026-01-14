@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="fr" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BRAVO! en français</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --voda-red: #E60000;
+            --voda-dark: #333333;
+            --bg-body: #F4F4F4;
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif; 
+            background: var(--bg-body); 
+            margin: 0; padding-bottom: 120px; color: var(--voda-dark);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .header { 
+            background: var(--white); padding: 15px 0; text-align: center;
+            position: sticky; top: 0; z-index: 2000;
+            border-bottom: 4px solid var(--voda-red);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; color: var(--voda-red); }
+
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .page { display: none; }
+        .page.active { display: block; animation: slideUp 0.3s ease-out; }
+
+        h2 { text-align: center; color: var(--voda-dark); margin: 25px 0; font-size: 1.3rem; font-weight: 700; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .card { 
+            background: var(--white); border-radius: 12px; padding: 25px 15px;
+            text-align: center; cursor: pointer; border: 1px solid #ddd;
+            box-shadow: var(--shadow); transition: 0.2s;
+        }
+        .card:hover { border-color: var(--voda-red); transform: translateY(-3px); }
+        .card .fr { display: block; font-size: 1.1rem; font-weight: 800; color: var(--voda-red); margin-bottom: 5px; }
+        .card .ar { display: block; font-size: 0.9rem; color: #666; }
+
+        #globalBackBtn {
+            position: fixed; bottom: 100px; right: 25px; z-index: 9999;
+            display: none; align-items: center; gap: 10px;
+            padding: 12px 25px; border-radius: 8px; border: none;
+            background: var(--voda-red); color: white;
+            font-family: 'Tajawal', sans-serif; font-weight: bold; cursor: pointer;
+            box-shadow: 0 5px 20px rgba(230, 0, 0, 0.4);
+        }
+
+        .table-container { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 30px; border: 1px solid #ddd; }
+        .table-header { padding: 15px; color: white; font-weight: 700; text-align: center; background: var(--voda-dark); }
+
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 1rem; cursor: pointer; }
+        .ar-text { direction: rtl; text-align: right; font-weight: 600; width: 45%; color: var(--voda-red); border-right: 1px solid #eee; }
+
+        .audio-panel { 
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--white); padding: 15px; border-top: 2px solid var(--voda-red); z-index: 3000;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<header class="header"><h1>BRAVO! en français</h1>
+ <h2>قاموس BRAVO! الناطق لكتب الفصل الدراسي الثاني 2026</h2>
+<div id="breadcrumb" style="
+    background:#fff;
+    padding:10px 15px;
+    border-bottom:2px solid #e60000;
+    font-weight:bold;
+    font-size:0.95rem;
+    display:none;">
+</div>
+
+</header>
+
+<button id="globalBackBtn" onclick="goBack()"><span>←</span><span>Retour | رجوع</span></button>
+
+<div class="container">
+    <div id="page1" class="page active">
+        <h2>اختر المرحلة التعليمية</h2>
+        <div class="grid">
+            <div class="card" onclick="selectStage('Primaire')"><span class="fr">Cycle Primaire</span><span class="ar">  المرحلة الابتدائية</span></div>
+            <div class="card" onclick="selectStage('Preparatoire')"><span class="fr">Cycle Préparatoire</span><span class="ar"> المرحلة الإعدادية </span></div>
+            <div class="card" onclick="selectStage('Secondaire')"><span class="fr">Cycle Secondaire</span><span class="ar">المرحلة الثانوية</span></div>
+        </div>
+    </div>
+    <div id="page2" class="page"><h2 id="stageTitle"></h2><div id="yearsGrid" class="grid"></div></div>
+    <div id="page3" class="page"><h2 id="unitsTitle"></h2><div id="unitsGrid" class="grid"></div></div>
+    <div id="page5" class="page"><h2 id="lessonsTitle"></h2><div id="lessonsGrid" class="grid"></div></div>
+    <div id="page4" class="page"><h2 id="contentHeader"></h2><div id="tablesContainer"></div></div>
+</div>
+
+<div class="audio-panel" id="audioPanel" style="display: none;">
+    <div style="max-width: 400px; margin: 0 auto; text-align: center;">
+        <input type="range" id="rate" min="0.5" max="1.2" step="0.1" value="0.7" style="width: 100%; accent-color: var(--voda-red);">
+        <div style="font-size: 0.8rem; font-weight: bold; color: var(--voda-red); margin-top: 5px;">🔊 اضغط على الكلمة لسماع النطق</div>
+    </div>
+</div>
+
+<script>
+let currentStage = "";
+let currentYear = "";
+let currentUnit = "";
+function updateBreadcrumb() {
+    const bc = document.getElementById("breadcrumb");
+    if (!currentStage) {
+        bc.style.display = "none";
+        return;
+    }
+
+    let text = currentStage;
+    if (currentYear) text += " › " + currentYear;
+    if (currentUnit) text += " › " + currentUnit;
+
+    bc.innerText = text;
+    bc.style.display = "block";
+}
+
+
+
+
+
+
+
+
+const database = {
+    /* كل الداتا السابقة (الابتدائي، الإعدادي، والثانوي) موجودة هنا */
+    
+
+       // ... (هنا يتم إدراج داتا 1ع و 2ع و 3ع التي تم برمجتها سابقاً)
+    // ملاحظة: سيتم استدعاء الداتا بناءً على المعرفات مثل "1p-u4" للمرحلة الإعدادية
+    // و "4e-u1" للمرحلة الابتدائية مثلاً
+
+
+
+
+
+
+
+  // ================= الصف الأول الإعدادي =================
+"1préparatoire-révision":[
+       { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["un nom","اسم الأب (اللقب)"],["un prénom","اسم الشخص"],["un élève","تلميذ"],["un collégien","طالب إعدادي"],["un étudiant","طالب جامعي"],["un garçon","ولد"],["un copain","صديق / رفيق"],["un ami","صديق"],["un collège","مدرسة إعدادي"],["un passeport","جواز سفر"],["un âge","عمر"],["un drapeau","علم"],["un pays","دولة"],["un lieu","مكان"],["un anniversaire","عيد ميلاد"],["un cadeau","هدية"],["un vélo","دراجة"],["un casque","سماعة"],["un mois","شهر"],["un jour","يوم"],["un gâteau","تورتة"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une fille","بنت"],["une collégienne","طالبة إعدادي"],["une étudiante","طالبة جامعية"],["une copine","صديقة / رفيقة"],["une amie","صديقة"],["une nationalité","جنسية"],["une adresse","عنوان"],["une ville","مدينة"],["une photo","صورة"],["une image","صورة"],["une rue","شارع"],["une carte scolaire","بطاقة مدرسية"],["une profession","مهنة"],["une année","عام / سنة"],["une fête","حفلة"],["une bougie","شمعةٌ"],["une boisson","مشروب"],["la date de naissance","تاريخ الميلاد"]] },
+        { type: "verb", title: "Verbes (أفعال)", words: [["épeler","يتهجى"],["saluer","يحيي"],["entrer","يدخل"],["arriver","يصل"],["visiter","يزور"],["s'appeler","يُسمى"],["s'excuser","يعتذر"],["se présenter","يقدم نفسه"]] },
+        { type: "adj", title: "Expressions (تعبيرات)", words: [["absent","غائب"],["présent","حاضر"],["et","و"],["aussi","أيضًا"],["pour","من أجل"],["être né","مولود"],["joyeux anniversaire","عيد ميلاد سعيد"],["voici","ها هو / ها هي"]] }
+    ],
+    // الوحدة 4
+"1préparatoire-unité4":[
+        { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["un collège","مدرسة إعدادي"],["un collège mixte","مدرسة إعدادي مشتركة"],["un collège de garçons","مدرسة إعدادي بنين"],["un collège de filles","مدرسة إعدادي بنات"],["un cours","حصة"],["un professeur","مُدرس/معلم"],["un directeur","مدير"],["un élève","تلميذ"],["un ami","صديق"],["un garçon","ولد"],["un sac à dos","شنطة ظهر"],["un casque","سماعة"],["le matin","في الصباح"],["un nombre","عدد"],["un objet","شيء"],["un dessin","رسم"],["un vélo","دراجة"],["un article","مقال"],["un journal","جريدة"],["un lieu","مكان"],["un plan","رسم تخطيطي / خريطة"],["un drapeau","علم"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une école","مدرسة"],["une élève","تلميذة"],["une professeure","مُدرسة / مُعلمة"],["une directrice","مديرة"],["une image","صورة"],["une fille","بنت"],["une amie","صديقة"],["la différence","الاختلاف"],["une matière scolaire","مادة دراسية"],["des nouvelles","أخبار"],["des consignes","تعليمات - إرشادات"]] },
+        { type: "special", title: "Les espaces du collège (أجزاء المدرسة)", words: [["un terrain de sport","أرض الملعب"],["un restaurant self","مطعم خدمة ذاتية"],["une classe","فصل"],["une cour","فناء"],["une bibliothèque","مكتبة"],["une piscine","حمام سباحة"]] },
+        { type: "special", title: "Les objets de la classe (محتويات الفصل)", words: [["un tableau","سبورة"],["un bureau","مكتب"],["un ordinateur","جهاز كمبيوتر"],["une table","منضدة"],["une chaise","كرسي"]] },
+        { type: "special", title: "Les objets du sac à dos (محتويات الشنطة)", words: [["un livre","كتاب"],["un cahier","كراسة"],["une trousse","مقلمة"],["un stylo","قلم جاف"],["un crayon","قلم رصاص"],["un surligneur","قلم تحديد فسفوري"],["un tube de colle","أنبوب لاصق"],["un correcteur liquide","مزيل سائل (كوريكتور)"],["un taille-crayon","براية"],["des crayons de couleur","أقلام ألوان"],["des ciseaux","مقص"],["une règle","مسطرة"],["une gomme","أستيكة"]] }
+    ],
+    // الوحدة 5
+"1préparatoire-unité5": [
+        { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["un sport","رياضة"],["un sportif","شخص رياضي"],["un ballon","كرة كبيرة"],["un T-shirt","تي شيرت"],["un maillot","قميص رياضي"],["un survêtement","ترنج"],["un short","شورت"],["un match","مباراة"],["un drapeau","علم"],["un camarade","زميل"],["un adolescent","شاب/مراهق"],["un jeune","شاب"],["un frère","أخ"],["un chanteur","مطرب"],["un mécanicien","ميكانيكي"],["un homme","رجل"],["un enfant","طفل"],["le soir","المساء"],["un mélange","خليط"],["un ordinateur","كمبيوتر"],["un vélo","دراجة"],["un journal","جريدة"],["le théâtre","المسرح"],["le cinéma","السينما"],["le poisson","السمك"],["un voyage","رحلة"],["un vol","رحلة طيران"],["un loisir","هواية"],["un autocar","اتوبيس سياحي"],["le temps libre","وقت الفراغ"],["le رقم الهاتف","رقم التليفون"],["les goûts","الميول"],["les parents","الوالدين"],["les résultats","النتائج"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une couleur","لون"],["une matière scolaire","مادة دراسية"],["une langue","لغة"],["une camarade","زميلة"],["une tenue de sport","زي رياضي"],["une chanteuse","مطربة"],["une voiture","سيارة"],["une comptine","أنشودة"],["la télévision","التليفزيون"],["une femme","امرأة"],["une fois","مرة"],["une préférence","تفضيل"],["la musique","الموسيقى"],["une chanson","أغنية"],["la viande","اللحمة"],["une opération","عملية حسابية"],["des frites","بطاطس محمرة"],["des chaussettes","جورب"],["des baskets","حذاء رياضي"]] },
+        { type: "special", title: "Les sports (الألعاب الرياضية)", words: [["le football","كرة القدم"],["le basket","كرة السلة"],["le tennis","التنس"],["le judo","الچودو"],["le handball","كرة اليد"],["le volley-ball","الكرة الطائرة"],["le cyclisme","ركوب الدراجات"],["la natation","السباحة"],["la gymnastique","التربية البدنية"],["la boxe","الملاكمة"],["la danse","الرقص"]] },
+        { type: "special", title: "Les matières (المواد الدراسية)", words: [["l'anglais","اللغة الإنجليزية"],["le français","اللغة الفرنسية"],["l'arabe","اللغة العربية"],["la géographie","الجغرافيا"],["l'histoire","التاريخ"],["l'informatique","الحاسب الآلي"],["le dessin","الرسم"],["les mathématiques","الرياضيات"],["les sciences","العلوم"]] },
+        { type: "verb", title: "Verbes (أفعال)", words: [["aimer","يحب"],["préférer","يفضل"],["adorer","يعشق"],["détester","يكره"],["exprimer","يعبر عن"],["étudier","يذاكر"],["passer","يقضي"],["décrire","يصف"],["colorier","يلون"],["jouer","يلعب"],["peser","يزن"],["chanter","يغني"],["voyager","يسافر"],["montrer","يشير إلى"],["parler","يتكلم"],["vérifier","يتحقق"],["deviner","يخمن"],["partir","يرحل"],["se prononcer","يُنطق"]] }
+    ],
+    // الوحدة 6
+"1préparatoire-unité6":[
+        { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["l'arbre généalogique","شجرة العائلة"],["un membre","عضو - فرد"],["un homme","رجل"],["un étudiant","طالب جامعي"],["un travail","عمل"],["un ordinateur portable","لاب توب"],["le visage","الوجه"],["les yeux","العينين"],["les cheveux","الشعر"],["le lieu de naissance","مكان الميلاد"],["un mari","زوج"],["le contraire","العكس"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une famille","عائلة / أسرة"],["une profession","مهنة"],["une femme","امرأة / زوجة"],["une personne","شخص"],["une photo","صورة"],["une taille","طول القامة"],["une cheffe","رئيسة الطباخين"],["une description physique","وصف جسماني"],["la nationalité","الجنسية"],["la couleur des yeux","لون العينين"],["des lunettes","نظارة"]] },
+        { type: "special", title: "L'arbre généalogique (شجرة العائلة)", words: [["les grands-parents","الأجداد"],["le grand-père","الجد"],["la grand-mère","الجدة"],["les parents","الأباء"],["le père","الأب"],["la mère","الأم"],["l'oncle","العم/الخال"],["la tante","العمه/الخالة"],["le frère","الأخ"],["la sœur","الأخت"],["le cousin","ابن العم"],["la cousine","ابنة العم"],["un fils","ابن"],["une fille","ابنة"]] },
+        { type: "special", title: "Les professions (المهن)", words: [["un docteur","دكتور"],["un médecin","طبيب"],["un pharmacien","صيدلي"],["un directeur","مدير"],["un professeur","مدرس"],["un joueur","لاعب"],["un footballeur","لاعب كرة قدم"],["un chanteur","مطرب"],["un ingénieur","مهندس"],["un acteur","ممثل"],["un coiffeur","كوافير"],["un pilote","طيار"],["un avocat","محامي"],["un chef","رئيس الطباخين"],["un mécanicien","ميكانيكي"],["un journaliste","صحفي"],["un photographe","مصور"],["un secrétaire","سكرتير"]] },
+        { type: "verb", title: "Verbes (أفعال)", words: [["regarder","يشاهد"],["faire","يعمل / يمارس"],["aller","يذهب"],["montrer","يُظهر"],["travailler","يعمل"],["envoyer","يرسل"],["porter","يرتدي"],["donner","يعطي"],["se composer de","يتكون من"],["se passer","يحدث"]] },
+        { type: "adj", title: "Expressions (تعبيرات وصفات)", words: [["mince","نحيف"],["gros","سمين"],["grand","طويل القامة"],["petit","قصير القامة"],["beau","جميل"],["laid","قبيح"],["riche","غني"],["pauvre","فقير"],["sympa","لطيف"],["blond","أشقر"],["brun","قمحي"],["châtain","كستنائي"],["roux","أصهب"],["sportif","رياضي"],["actif","نشيط"],["super","رائع"],["à côté de","بجانب"],["chez","عند"],["ça","هذا"],["maintenant","الآن"],["d'après moi","وفقاً لي"],["avoir l'air","يبدو عليه"],["de son vrai nom","اسمه الحقيقي"]] }
+    ],
+
+    // ================= الصف الثاني الإعدادي =================
+"2préparatoire-révision":[
+      { type: "masc", title: "Vocabulaire (مذكر)", words: [["un look", "مظهر - هيئة"], ["un modèle", "نموذج/موديل"], ["un travail", "عمل"], ["un enfant", "طفل"], ["un immeuble", "مبنى/عمارة"], ["un appartement", "شقة"], ["un balcon", "بلكونة / شُرفة"], ["un ordinateur", "كمبيوتر"], ["un voisin", "جار"], ["un vêtement", "ملبس"], ["un uniforme", "زي موحد"], ["un accessoire", "أكسسوار"], ["un lieu", "مكان"], ["un voyage", "رحلة"], ["un voyageur", "مسافر"], ["un ticket", "تذكرة"], ["un billet", "تذكرة"], ["un départ", "رحيل"], ["un pays", "دولة"], ["un océan", "محيط"], ["un lac", "بحيرة"], ["un monument", "أثر تاريخى"], ["un cheval", "حصان"], ["le déplacement", "التنقل"], ["le centre", "الوسط / المنتصف"], ["le week-end", "عطلة نهاية الأسبوع"]] },
+        { type: "fem", title: "Vocabulaire (مؤنث)", words: [["une valise", "حقيبة سفر"], ["une fête", "حفلة"], ["une occasion", "مناسبة"], ["une maison", "منزل"], ["une pièce", "حجرة / جزء"], ["une décoration", "ديكور"], ["une ville", "مدينة"], ["une arrivée", "وصول"], ["une journée", "فترة النهار"], ["une durée", "مدة"]] },
+        { type: "verb", title: "Verbes (أفعال)", words: [["visiter", "يزور"], ["travailler", "يعمل"], ["passer", "يقضي"], ["inviter", "يدعو"], ["situer", "يحدد موقع"], ["localiser", "يحدد موقع"], ["arriver", "يصل"], ["décorer", "يزين"], ["étudier", "يذاكر / يدرس"], ["jouer", "يلعب"], ["marcher", "يمشى"], ["voyager", "يسافر"], ["se trouver", "يقع - يوجد"], ["se déplacer", "يتنقل"], ["partir", "يرحل"], ["voir", "يرى"], ["lire", "يقرأ"], ["faire", "يفعل / يمارس"], ["aller", "يذهب"], ["sortir", "يخرج"]] },
+        { type: "special", title: "Vêtements & Accessoires (ملابس وإكسسوارات)", words: [["un pantalon", "بنطلون"], ["un pull", "بلوفر"], ["un short", "شورت"], ["un anorak", "سويتر مبطن بفرو"], ["un tee-shirt", "تى شيرت"], ["un jean", "بنطلون جينز"], ["un survêtement", "ترنج (بدلة رياضية)"], ["un manteau", "معطف / بالطو"], ["un blouson", "چاكت قصير"], ["un chemisier", "بلوزة"], ["un caleçon", "سروال داخلى"], ["une robe", "فستان"], ["une jupe", "چيبة / تنورة"], ["une chemise", "قميص"], ["une veste", "چاكت"], ["des chaussettes", "جورب"], ["un chapeau", "قبعة"], ["un bonnet", "طاقية"], ["un sac", "شنطة"], ["un collier", "عقد"], ["une casquette", "كاسكيت"], ["une cravate", "كرافتة"], ["une écharpe", "اشارب"], ["des lunettes de soleil", "نظارة شمس"], ["des chaussures", "حذاء"], ["des baskets", "حذاء رياضى"]] },
+        { type: "special", title: "Maison & Meubles (المنزل والأثاث)", words: [["une chambre", "غرفة نوم"], ["une salle à manger", "حجرة طعام"], ["un salon", "صالون"], ["une cuisine", "مطبخ"], ["un couloir", "ممر"], ["une entrée", "مدخل"], ["un jardin", "حديقة"], ["une salle de bains", "حمام"], ["un garage", "جراچ"], ["les toilettes", "الحمام (دورات المياه)"], ["un lit", "سرير"], ["un canapé", "كنبة"], ["une armoire", "دولاب"], ["une table", "منضدة"], ["un fauteuil", "كرسى بمسند"], ["un bureau", "مكتب"], ["des étagères", "أرفف"], ["une chaise", "كرسى"], ["une lampe", "أباجورة مكتب"], ["un tableau", "لوحة"], ["un tapis", "سجادة"], ["un abat-jour", "أباجورة"], ["une cuisinière", "بوتاجاز"], ["un frigo", "ثلاجة"], ["une baignoire", "بانيو"], ["un lavabo", "حوض"], ["une douche", "دش"]] },
+        { type: "special", title: "Moyens de transport (المواصلات)", words: [["un taxi", "تاكسي"], ["un vélo", "دراجة"], ["un train", "قطار"], ["un autocar", "حافلة سياحية"], ["un avion", "طائرة"], ["un bateau", "سفينة / مركب"], ["un autobus (bus)", "اتوبيس"], ["un métro", "مترو"], ["un tramway (tram)", "ترام"], ["un scooter", "سكوتر"], ["une moto", "موتوسيكل"], ["une voiture", "سيارة"], ["un arrêt de bus", "محطة أتوبيس"], ["une gare", "محطة قطار"], ["une station de métro", "محطة مترو"], ["une station de tram", "محطة ترام"], ["un port", "ميناء"], ["un aéroport", "مطار"]] }
+    ],
+"2préparatoire-unité4":[
+        { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["un emploi du temps", "جدول مواعيد الحصص"], ["un cartable", "شنطة مدرسية"], ["un lycée", "مدرسة ثانوي"], ["le matin", "الصباح"], ["l'après-midi", "بعد الظهر"], ["le soir", "المساء"], ["midi", "منتصف النهار (12 ظهراً)"], ["minuit", "منتصف الليل"], ["un programme", "برنامج"], ["un jour de congé", "يوم عطلة"], ["un voisin", "جار"], ["un texto", "رسالة نصية"], ["le début", "البداية"], ["le repas", "الوجبة"], ["le petit-déjeuner", "وجبة الفطار"], ["le déjeuner", "الغداء"], ["le goûter", "التصبيرة"], ["le dîner", "العشاء"], ["le temps", "الوقت"], ["le premier cours", "الحصة الأولي"], ["le dernier cours", "الحصة الأخيرة"], ["les moments de la journée", "فترات اليوم"], ["les horaires", "جدول المواعيد"], ["les devoirs", "الواجبات"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une journée", "فترة النهار"], ["une routine quotidienne", "روتين يومي"], ["une activité", "نشاط"], ["une heure", "ساعة زمنية"], ["une famille", "عائلة"], ["une semaine", "أسبوع"], ["la nuit", "الليل"], ["la durée", "المدة"], ["la fin", "النهاية"], ["une émission", "برنامج"], ["les dents", "الأسنان"], ["une voisine", "جارة"], ["une langue", "لغة"], ["la récréation", "الفسحة"]] },
+        { type: "special", title: "Les jours de la semaine (أيام الأسبوع)", words: [["le samedi", "السبت"], ["le dimanche", "الأحد"], ["le lundi", "الأثنين"], ["le mardi", "الثلاثاء"], ["le mercredi", "الأربعاء"], ["le jeudi", "الخميس"], ["le vendredi", "الجمعة"]] },
+        { type: "verb", title: "Verbes (أفعال)", words: [["se réveiller", "يستيقظ"], ["se lever", "ينهض"], ["se coucher", "ينام"], ["se laver", "يغتسل"], ["se doucher", "يأخذ دش"], ["s'habiller", "يرتدي ملابسة"], ["préparer", "يجهز / يعد"], ["se préparer", "يستعد / يجهز نفسه"], ["se promener", "يتنزة"], ["commencer", "يبدأ"], ["se terminer", "ينتهي"], ["finir", "يُنهي / ينتهي"], ["rentrer", "يعود"], ["interviewer", "يتحاور"], ["mimer", "يقلد بالحركات"], ["déjeuner", "يتناول الغداء"], ["dîner", "يتناول العشاء"], ["durer", "يستغرق / يستمر"], ["noter", "يسجل"], ["exprimer", "يعبر عن"], ["suivre", "يتابع"], ["venir", "يأتي"], ["comparer", "يقارن"], ["partir", "يرحل"], ["prendre", "يأخذ - يتناول"]] }
+    ],
+"2préparatoire-unité5":[
+        { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["un itinéraire", "خط سير"], ["un مكان", "مكان"], ["un chemin", "طريق"], ["un quartier", "حي سكني"], ["un boulevard", "شارع عريض جداً"], ["un commerce", "محل تجارى"], ["un rendez-vous", "ميعاد"], ["un panneau", "لوحة مرور إرشادية"], ["le TGV", "القطار السريع"], ["le trafic", "حركة المرور"], ["un emplacement", "موقع / مكان"], ["un trajet", "مسافة سير / مسار"], ["un pont", "كوبري"], ["un garage", "جراچ"], ["un moyen de transport", "وسيلة مواصلات"], ["un papier", "ورقة"], ["du pain", "خبز"], ["le départ", "الرحيل"], ["un repas", "وجبة"], ["un médicament", "دواء"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une ville", "مدينة"], ["une rue", "شارع"], ["une route", "طريق"], ["une avenue", "شارع واسع"], ["une place", "ميدان"], ["une direction", "إتجاه"], ["une adresse", "عنوان"], ["une pièce de théâtre", "مسرحية"], ["une pancarte", "لافتة / لوحة"], ["une maison", "منزل"], ["une boîte", "صندوق"], ["l'arrivée", "الوصول"], ["la danse", "الرقص"], ["une trottinette", "سكوتر كهربائي"], ["une entrée", "مدخل"], ["une source", "مصدر"], ["une espace", "مسافة - مساحة"], ["une fontaine", "نافورة"], ["une indication", "إشارة - دلالة"], ["une liste", "قائمة"], ["des instructions", "تعليمات / إرشادات"], ["des lunettes de soleil", "نظارة شمس"]] },
+        { type: "special", title: "Commerces & Lieux (أماكن المدينة)", words: [["un magasin", "محل"], ["un restaurant", "مطعم"], ["un supermarché", "سوبر ماركت"], ["un café", "مقهى"], ["un hôtel", "فندق"], ["une boulangerie", "مخبز"], ["une pâtisserie", "محل حلواني"], ["une cafétéria", "كافيتريا"], ["une pharmacie", "صيدلية"], ["un stade", "إستاد"], ["un lycée", "مدرسة ثانوى"], ["l'Opéra", "دار الأوبرا"], ["un cinéma", "سينما"], ["un parc", "متنزه عام"], ["un théâtre", "مسرح"], ["un club sportif", "نادى رياضي"], ["une bibliothèque", "مكتبة"], ["une piscine", "حمام سباحة"], ["une gare", "محطة قطار"], ["la mairie", "مقر البلدية"]] }
+    ],
+"2préparatoire-unité6":[
+        { type: "masc", title: "Noms masculins (أسماء مذكرة)", words: [["un repas", "وجبة"], ["le petit-déjeuner", "الأفطار"], ["le déjeuner", "الغداء"], ["le goûter", "وجبة خفيفة (التصبيرة)"], ["le dîner", "العشاء"], ["un menu", "قائمة طعام"], ["un plat", "طبق"], ["le dessert", "التحلية"], ["un fruit", "فاكهة"], ["un légume", "خضار"], ["un magasin", "محل"], ["un restaurant", "مطعم"], ["un marché", "سوق"], ["un commerçant", "تاجر"], ["un vendeur", "بائع"], ["un client", "زبون"], ["un prix", "سعر"], ["un blog", "مدونة على النت"], ["un euro", "اليورو"], ["le sucre", "السكر"], ["le sel", "الملح"], ["le beurre", "الزبدة"], ["le ketchup", "الكاتشب"], ["des ingrédients", "مكونات"], ["des aliments", "أغذية"], ["des produits alimentaires", "منتجات غذائية"]] },
+        { type: "fem", title: "Noms féminins (أسماء مؤنثة)", words: [["une cliente", "زبونة"], ["une vendeuse", "بائعة"], ["une boisson", "مشروب"], ["une liste", "قائمة"], ["une quantité", "كمية"], ["une façon", "طريقة"], ["une fois", "مرة"], ["une livre égyptienne", "جنية مصري"], ["une entrée", "مقبلات"], ["l'huile", "الزيت"], ["la farine", "الدقيق"], ["une carte de crédit", "كارت فيزا"], ["la scène", "المشهد"], ["des courses", "مشتروات"]] },
+        { type: "verb", title: "Verbes (أفعال)", words: [["manger", "يأكل"], ["boire", "يشرب"], ["prendre", "يتناول"], ["acheter", "يشتري"], ["vendre", "يبيع"], ["payer", "يدفع"], ["préparer", "يجهز / يُعد"], ["utiliser", "يستخدم"], ["donner", "يعطي"], ["mettre", "يضع"], ["commander", "يطلب/يوصي بـ"], ["raconter", "يحكى"], ["aider", "يساعد"], ["bouger", "يتحرك"], ["envoyer", "يرسل"], ["costumer", "يتكلف"], ["préciser", "يحدد"]] }
+    ],
+
+    // ================= الصف الثالث الإعدادي =================
+    // ================= الصف الثالث الإعدادي (3 Prep) =================
+"3préparatoire-révision":[
+        {type:"masc", title:"Noms masculins (مذكر)", words:[["un loisir","هواية / وقت فراغ"],["un temps libre","وقت فراغ"],["un sport","رياضة"],["un instrument de musique","آلة موسيقية"],["un ballon","كرة كبيرة"],["un joueur","لاعب"],["un sac de sport","شنطة رياضية"],["un gymnase","صالة ألعاب رياضية"],["un anniversaire","عيد ميلاد"],["un gâteau","جاتوه"],["un cadeau","هدية"],["un match","مباراة"],["un voyage","رحلة"],["un moyen de transport","وسيلة مواصلات"],["un lieu","مكان"],["un voyageur","مسافر"],["un repas","وجبة"],["un petit-déjeuner","فطار"],["un déjeuner","غداء"],["un dîner","عشاء"],["un menu","قائمة طعام"],["un sandwich","ساندوتش"],["de l'argent","النقود"],["le sel","الملح"],["le sucre","السكر"],["les ingrédients","المكونات"]]},
+        {type:"fem", title:"Noms féminins (مؤنث)", words:[["une activité","نشاط"],["une fête de mariage","حفلة زواج"],["la fête de Pâques","عيد الفصح"],["une invitation","دعوة"],["une idée","فكرة"],["une bougie","شمعة"],["une valise","حقيبة سفر"],["une commande","طلب"],["l'addition","الحساب"],["une boisson","مشروب"],["une portion de frites","باكت بطاطس مقلية"],["des épices","توابل"],["la farine","الدقيق"]]},
+        {type:"verb", title:"Verbes (أفعال)", words:[["faire","يمارس"],["jouer","يلعب"],["pratiquer","يمارس"],["s'amuser","يتسلى"],["prendre","يركب / يتناول"],["passer","يمر / يقضى"],["payer","يدفع"],["apporter","يحضر"],["servir","يقدم/يخدم"]]},
+        {type:"special", title:"Sports & Instruments (الرياضة والآلات)", words:[["le football","كرة القدم"],["le basket","كرة السلة"],["le tennis","التنس"],["le ski","التزلج على الجليد"],["le surf","التزلج على الماء"],["le skate","التزلج على لوح بعجل"],["le volley","الكرة الطائرة"],["le handball","كرة اليد"],["le yoga","اليوجا"],["le hockey","الهوكى"],["le jogging","المشي"],["le ping-pong","تنس الطاولة"],["le cyclisme","ركوب الدراجات"],["la natation","السباحة"],["la course à pied","سباق الجري"],["la boxe","الملاكمة"],["la danse","الرقص"],["la lutte","المصارعة"],["la corde à sauter","نط الحبل"],["l'équitation","الفروسية"],["le piano","بيانو"],["le violon","آلة الكمان"],["le saxophone","الساكسفون"],["l'orgue","الأورج"],["l'accordéon","الأكورديون"],["la trompette","البوق"],["la flûte","آلة الناي"],["la guitare","الجيتار"]]},
+        {type:"special", title:"Aliments & Boissons (أغذية ومشروبات)", words:[["des légumes","خضروات"],["des fruits","فواكه"],["pommes de terre","بطاطس"],["concombres","خيار"],["tomates","طماطم"],["la salade","سلطة"],["du riz","أرز"],["des pâtes","مكرونة"],["des spaghettis","اسباجتي"],["du poisson","سمك"],["fruits de mer","فواكه البحر"],["de la viande","لحم"],["du rôti","لحم محمر"],["du steak","شرائح لحم"],["du kebab","كباب"],["du poulet","فراخ"],["de la soupe","شوربة"],["du foul","فول"],["falafels","طعمية"],["des œufs","بيض"],["une omelette","بيض مقلي"],["du pain","خبز"],["du fromage","جبنة"],["de la confiture","مربى"],["de la crêpe","كريب"],["de la pizza","بيتزا"],["des frites","بطاطس مقلية"],["haricots verts","فاصوليا خضراء"],["la purée","بطاطس مهروسة"],["des lentilles","عدس"],["croissants","كرواسون"],["du raisin","عنب"],["de la glace","أيس كريم"],["la pastèque","بطيخ"],["la pomme","تفاح"],["du chocolat","شيكولاتة"],["du beurre","زبدة"],["du citron","ليمون"],["hamburger","هامبرجر"],["molokhia","ملوخية"],["courgettes farcies","محشي كوسة"],["chou farci","محشي كرنب"],["cassoulet","فاصوليا باللحمة"],["hachis parmentier","بطاطس باللحمة المفرومة"],["lasagnes","لازانيا"],["bamia","طاجن بامية"],["coca-cola","كوكاكولا"],["soda","صودا"],["jus de fruits","عصير فواكه"],["limonade","عصير ليمون"],["café au lait","قهوة بالحليب"],["le lait","اللبن"],["le thé","الشاي"]]}
+    ],
+"3préparatoire-unité4":[
+        {type:"masc", title:"Noms masculins (مذكر)", words:[["un menu","قائمة الطعام"],["un plat","طبق"],["un repas","وجبة"],["un sondage","استبيان"],["un dessert","تحلية"],["un conseil","نصيحة"],["un mixeur","خلاط كهربائي"],["un moule à gâteau","قالب جاتوه"],["un bol","وعاء"],["un saladier","وعاء سلطة"],["un mélange","خليط"],["un résultat","نتيجة"],["temps de cuisson","زمن الطهي"],["du foul","فول"],["du poulet","فراخ"],["du sel fin","ملح ناعم"],["du miel","عسل"],["du beurre","زبدة"],["du cumin","كمون"],["du yaourt","زبادي"],["des oignons","بصل"],["des falafels","فلافل"],["des aliments","أطعمة"],["des ingrédients","مكونات"],["des solides","مواد صلبة"],["des liquides","مواد سائلة"]]},
+        {type:"fem", title:"Noms féminins (مؤنث)", words:[["une recette","وصفة"],["une liste des courses","قائمة مشتروات"],["une étape","مرحلة / خطوة"],["une casserole","إناء طبخ"],["une poêle","مقلاة"],["une assiette","طبق"],["une قوية","كمية"],["de la curcuma","كركم"],["de la paprika","بابريكا"],["l'huile d'olive","زيت زيتون"],["de la mayonnaise","مايونيز"],["de la soupe","شوربة"],["de la glace","أيس كريم"],["la nourriture","طعام"],["une demi-heure","نصف ساعة"],["une préparation","تجهيز"],["des frites","بطاطس محمرة"],["des olives","زيتون"]]},
+        {type:"verb", title:"Verbes (أفعال)", words:[["préciser","يحدد"],["préparer","يجهز"],["proposer","يقترح"],["manger","يأكل"],["se manger","يؤكل"],["acheter","يشتري"],["noter","يدون"],["designer","يصمم"],["dépenser","ينفق"],["nommer","يسمي"],["coûتر","يتكلف"],["décrire","يصف"],["servir","يقدم"],["devoir","يجب"]]},
+        {type:"adj", title:"Adj. & Expressions", words:[["utile","مفيد"],["inutile","غير مفيد"],["chaud","ساخن"],["froid","بارد"],["sucré","مسكر"],["bouillant","مغلي"],["râpé","مبشور"],["différent","مختلف"],["lavé","مغسول"],["sec","جاف"],["gros","ضخم"],["plusieurs","عديد"],["peu","قليلاً"],["beaucoup","كثيراً"],["séparément","بشكل منفصل"],["au total","إجمالاً"],["ne.... plus","لم يعد"],["tous les côtés","كل الجوانب"],["manière de servir","طريقة تقديم"],["il faut","يلزم"],["c'est prêt","جاهز"],["mettre en marche","يشغل"],["retirer du feu","يرفع من النار"],["remettre sur le feu","يضعه ثانية"],["faire chauffer","يسخن"],["faire cuire","يطهو"],["laisser cuire","يتركه ينضج"],["mettre en premier","يضع أولاً"],["en bonne santé","بصحة جيدة"]]}
+    ],
+"3préparatoire-unité5":[
+        {type:"masc", title:"Noms masculins (مذكر)", words:[["le temps","الطقس / الوقت"],["le climat","المناخ"],["bulletin météo","النشرة الجوية"],["le soleil","الشمس"],["le ciel","السماء"],["le vent","الرياح"],["un orage","عاصفة"],["arc-en-ciel","قوس قزح"],["un tour","جولة"],["présentateur","مقدم برامج"],["un titre","عنوان"],["un درجة","درجة الحرارة"],["le nord","الشمال"],["l'est","الشرق"],["l'ouest","الغرب"],["le sud","الجنوب"],["un pays","دولة"],["un عنصر","عنصر"],["carnet de voyage","دفتر رحلات"],["un désert","صحراء"],["l'été","الصيف"],["l'hiver","الشتاء"],["le printemps","الربيع"],["l'automne","الخريف"],["un symbole","رمز"],["les nuages","السحب"],["le début","البداية"],["un arbre","شجرة"]]},
+        {type:"fem", title:"Noms féminins (مؤنث)", words:[["la météo","حالة الطقس"],["une carte","خريطة"],["une موسم","فصل"],["température","درجة الحرارة"],["la pluie","المطر"],["la côte","الساحل"],["la montagne","الجبل"],["la campagne","الريف"],["la neige","الثلج"],["la طبيعة","الطبيعة"],["une balade","نزهة"],["une منطقة","منطقة"],["explication","شرح"],["une plage","شاطئ"],["une chaîne","قناة"],["أوراق الشجر","أوراق الأشجار"],["الإجازة","الإجازة"],["prévisions météo","تنبؤات الطقس"],["des brumes","ضباب"],["des fleurs","زهور"]]},
+        {type:"special", title:"Les mois (شهور السنة)", words:[["janvier","يناير"],["février","فبراير"],["mars","مارس"],["avril","أبريل"],["mai","مايو"],["juin","يونيو"],["juillet","يوليو"],["août","أغسطس"],["septembre","سبتمبر"],["octobre","أكتوبر"],["نوفمبر","نوفمبر"],["دسمبر","ديسمبر"]]},
+        {type:"verb", title:"Verbes (أفعال)", words:[["neiger","تمطر ثلج"],["briller","يسطع"],["tomber","يسقط"],["passer","يقضي"],["pense","يعتقد"],["commencer","يبدأ"],["se terminer","ينتهي"],["finir","ينتهي"],["se trouver","يوجد / يقع"],["commenter","يعلق"],["présenter","يقدم"],["changer","يتغير"],["prévoir","يتنبأ"],["pleuvoir","تمطر"],["décrire","يصف"],["suivre","يتبع"],["souffler","تهب"]]},
+        {type:"adj", title:"Adj. & Expressions", words:[["chaud","حار"],["froid","بارد"],["clair","صافي"],["beau","جميل"],["doux","لطيف"],["mauvais","سيء"],["couvert","مغيم"],["bon","جيد"],["frais","منعش"],["moyen","متوسط"],["modéré","معتدل"],["ensoleillé","مشمس"],["nuageux","ملبد بالسحب"],["pluvieux","ممطر"],["maximum","حد أقصى"],["minimum","حد أدنى"],["magnifique","رائع"],["différent","مختلف"],["surtout","بصفة خاصة"],["partout","في كل مكان"],["avant","قبل"],["après","بعد"],["pendant","أثناء"],["maintenant","الآن"],["aujourd'hui","اليوم"],["demain","غداً"],["gros nuages","سحب كثيفة"],["situé","واقع"],["sur l'ensemble","على الجميع"],["vive les vacances","تحيا الإجازة"],["avoir l'air","يبدو عليه"],["bon voyage","رحلة سعيدة"],["là-bas","هناك"],["encore","مازال"]]}
+    ],
+"3préparatoire-unité6":[
+        {type:"masc", title:"Noms masculins (مذكر)", words:[["le physique","الجسدية"],["le caractère","السمات"],["le جسم الإنسان","جسم الإنسان"],["l'homme","الإنسان"],["les حواس","الحواس"],["le bruit","الضوضاء"],["le هدوء","الهدوء"],["موضوع الحصة","موضوع الحصة"],["le الموضوع","الموضوع"],["النظام","النظام"],["الغناء","الغناء"],["un عطر","عطر"],["عصفور","عصفور"],["عضو","عضو"],["توأم (ذكور)","توأم (ذكور)"],["الناس","الناس"],["الملامح","الملامح"],["العيوب","العيوب"]]},
+        {type:"fem", title:"Noms féminins (مؤنث)", words:[["جزء","جزء"],["تمثال","تمثال"],["تعريف","تعريف"],["مطربة","مطربة"],["وصف","وصف"],["الصداقة","الصداقة"],["رائحة","رائحة"],["خروجة","خروجة"],["المميزات","المميزات"],["مرة","مرة"],["توأم (إناث)","توأم (إناث)"],["أشياء","أشياء"]]},
+        {type:"special", title:"Corps & Sens (الجسم والحواس)", words:[["البطن","البطن"],["الذراع","الذراع"],["القدم","القدم"],["المرفق","المرفق"],["الظهر","الظهر"],["الرقبة","الرقبة"],["الأنف","الأنف"],["الركبة","الركبة"],["العين","العين"],["العينين","العينين"],["اللسان","اللسان"],["الفم","الفم"],["الرأس","الرأس"],["الساق","الساق"],["اليد","اليد"],["الخد","الخد"],["الكتف","الكتف"],["الأذنين","الأذنين"],["الأسنان","الأسنان"],["التذوق","التذوق"],["اللمس","اللمس"],["الشم","الشم"],["السمع","السمع"],["البصر","البصر"]]},
+        {type:"verb", title:"Verbes (أفعال)", words:[["يتذوق","يتذوق"],["يتذوق","يتذوق"],["يلمس","يلمس"],["يشم","يشم"],["يرى","يرى"],["يسمع","يسمع"],["يسمع","يسمع"],["يقابل","يقابل"],["يساعد","يساعد"],["يرتب","يرتب"],["يذكر","يذكر"],["يجرؤ","يجرؤ"],["يبتسم","يبتسم"],["يصف","يصف"],["يتكون من","يتكون من"],["يمشي","يمشي"]]},
+        {type:"adj", title:"Adj. & Characters", words:[["غاضب","غاضب"],["متعب","متعب"],["سعيد","سعيد"],["مسرور","مسرور"],["حزين","حزين"],["جميل","جميل"],["طويل","طويل"],["قصير","قصير"],["قصير","قصير"],["طويل","طويل"],["أشقر","أشقر"],["قمحي","قمحي"],["أصهب","أصهب"],["بدين","بدين"],["نحيف","نحيف"],["كستنائي","بني فاتح"],["رائع","رائع"],["رائع","رائع"],["ممتع","ممتع"],["أفضل","أفضل"],["مريح","مريح"],["جداً","جداً"],["من بين","من بين"],["معاً","معاً"],["على العكس","على العكس"],["بدون توقف","بدون توقف"],["الجميع","الجميع"],["طول الوقت","طول الوقت"],["يبدو عليه","يبدو عليه"],["صداقات جديدة","صداقات جديدة"],["طاحونة كلام","طاحونة كلام"],["ذكي","ذكي"],["شرير","شرير"],["مبتسم","مبتسم"],["صبور","صبور"],["غير صبور","غير صبور"],["أكول","أكول"],["ثرثار","ثرثار"],["منظم","منظم"],["غير منظم","غير منظم"],["لطيف","لطيف"],["نشيط","نشيط"],["رياضي","رياضي"],["خجول","خجول"],["لطيف","لطيف"],["اجتماعي","اجتماعي"],["هادئ","هادئ"],["قلق","قلق"],["شجاع","شجاع"],["كريم","كريم"],["جاد","جاد"],["مجتهد","مجتهد"],["كسول","كسول"],["ظريف","ظريف"],["رومانسي","رومانسي"],["رقيق","رقيق"],["نشيط","نشيط"]]}
+    ],
+"4primaire-révision": [
+    { 
+        type: "vocab", 
+        title: "1. Vocabulaire (مفردات عامة)", 
+        words: [
+            ["un professeur", "مدرس"],
+            ["un élève", "تلميذ"],
+            ["un prénom", "اسم الشخص"],
+            ["un âge", "عُمر"],
+            ["un animal", "حيوان"],
+            ["un anniversaire", "عيد ميلاد"],
+            ["un ballon", "بالونة"],
+            ["un gâteau", "جاتوه"],
+            ["un cadeau", "هدية"],
+            ["une école", "مدرسة"],
+            ["une bougie", "شمعة"],
+            ["compter", "يعد"],
+            ["chanter", "يغني"],
+            ["danser", "يرقص"],
+            ["marcher", "يمشي"],
+            ["sauter", "يقفز"],
+            ["imiter", "يقلد أصوات وحركات"],
+            ["mimer", "يقلد حركات فقط"],
+            ["nager", "يسبح - يعوم"],
+            ["voler", "يطير"],
+            ["dessiner", "يرسم"],
+            ["jouer", "يلعب"],
+            ["merci", "شكرًا"],
+            ["voilà", "ها هو / ها هي"]
+        ] 
+    },
+    { 
+        type: "salut", 
+        title: "2. Les salutations (التحيات)", 
+        words: [
+            ["Bonjour !", "صباح الخير"],
+            ["Bonsoir !", "مساء الخير"],
+            ["Salut !", "أهلاً / سلام"],
+            ["Comment ça va ?", "كيف حالك ؟"],
+            ["Au révisionoir !", "إلى اللقاء"],
+            ["À plus tard !", "إلى اللقاء / فيما بعد"],
+            ["À bientôt !", "إلى القريب العاجل"],
+            ["Ça va bien.", "بخير"]
+        ] 
+    },
+    { 
+        type: "num", 
+        title: "3. Les nombres de 1 à 10 (الأرقام)", 
+        words: [
+            ["un", "واحد"],
+            ["deux", "اثنان"],
+            ["trois", "ثلاثة"],
+            ["quatre", "أربعة"],
+            ["cinq", "خمسة"],
+            ["six", "ستة"],
+            ["sept", "سبعة"],
+            ["huit", "ثمانية"],
+            ["neuf", "تسعة"],
+            ["dix", "عشرة"]
+        ] 
+    },
+    { 
+        type: "famille", 
+        title: "4. Les membres de la famille (أفراد العائلة)", 
+        words: [
+            ["un père", "أب"],
+            ["une mère", "أم"],
+            ["un oncle", "عم / خال"],
+            ["une tante", "عمة / خالة"],
+            ["un frère", "أخ"],
+            ["une sœur", "أخت"]
+        ] 
+    },
+    { 
+        type: "ecole", 
+        title: "5. Les affaires scolaires (الأدوات المدرسية)", 
+        words: [
+            ["un cartable", "شنطة مدرسية"],
+            ["un crayon", "قلم رصاص"],
+            ["un stylo", "قلم جاف"],
+            ["un livre", "كتاب"],
+            ["un cahier", "كراسة"],
+            ["un feutre", "قلم سبورة"],
+            ["un taille-crayon", "براية"],
+            ["une trousse", "مقلمة"],
+            ["une règle", "مسطرة"],
+            ["une gomme", "أستيكة"]
+        ] 
+    },
+    { 
+        type: "couleurs", 
+        title: "6. Les couleurs (الألوان)", 
+        words: [
+            ["le blanc", "الأبيض"],
+            ["le noir", "الأسود"],
+            ["le rouge", "الأحمر"],
+            ["le bleu", "الأزرق"],
+            ["le jaune", "الأصفر"],
+            ["le rose", "الوردي"],
+            ["l'orange", "البرتقالي"],
+            ["le marron", "البني"],
+            ["le violet", "البنفسجي"],
+            ["le gris", "الرمادي"]
+        ] 
+    },
+    { 
+        type: "animaux", 
+        title: "7. Les animaux (الحيوانات)", 
+        words: [
+            ["un chat", "قطة"],
+            ["un chien", "كلب"],
+            ["un poisson rouge", "سمكة حمراء (للزينة)"],
+            ["un hamster", "حيوان قارض (يشبه الفأر)"],
+            ["un dragon", "تنين (حيوان خرافي)"],
+            ["un dauphin", "دولفين"],
+            ["une tortue", "سلحفاة"],
+            ["une perruche", "ببغاء"],
+            ["un ours", "دب"],
+            ["un éléphant", "فيل"],
+            ["un tigre", "نمر"],
+            ["un papillon", "فراشة"]
+        ] 
+    }
+],
+"4primaire-unité5":[
+    { 
+        type: "jouets", 
+        title: "Des jouets (ألعاب)", 
+        words: [
+            ["un robot", "إنسان آلي"],
+            ["une poupée", "دمية (عروسة لعبة)"],
+            ["un vélo", "دراجة"],
+            ["une moto", "موتوسيكل"],
+            ["un ballon", "كرة"],
+            ["des rollers", "حذاء بعجل"],
+            ["un jeu vidéo", "لعبة فيديو"],
+            ["des billes", "بلي"]
+        ] 
+    },
+    { 
+        type: "actions", 
+        title: "Noms et Verbes (أسماء وأفعال)", 
+        words: [
+            ["un garçon", "ولد"], ["jouer", "يلعب"],
+            ["une fille", "بنت"], ["faire du roller", "يمارس التزلج"],
+            ["manger", "يأكل"], ["apporter", "يُحضر"],
+            ["chanter", "يغني"], ["dormir", "ينام"],
+            ["danser", "يرقص"], ["boire", "يشرب"]
+        ] 
+    }
+],
+"4primaire-unité6":[
+    { 
+        type: "vetements", 
+        title: "Je mets (أنا أرتدي - الملابس)", 
+        words: [
+            ["un pantalon", "بنطلون"],
+            ["une robe", "فستان"],
+            ["une jupe", "جيبة"],
+            ["un jean", "بنطلون جينز"],
+            ["une chemise", "قميص"],
+            ["un pull", "بلوفر"],
+            ["un tee-shirt", "تيشيرت"],
+            ["un gilet", "جيليه (صديري)"],
+            ["une veste", "جاكت"]
+        ] 
+    },
+    { 
+        type: "chaussures", 
+        title: "Je mets (أنا أرتدي - الأحذية والإكسسوارات)", 
+        words: [
+            ["un chapeau", "قبعة"],
+            ["des baskets", "حذاء رياضي"],
+            ["un bonnet", "طاقية (بونيه)"],
+            ["des chaussures", "حذاء"],
+            ["des bottes", "بوت طويل"],
+            ["des chaussettes", "جورب"]
+        ] 
+    },
+    { 
+        type: "vocabulaire", 
+        title: "Vocabulaire et Verbes (مفردات وأفعال)", 
+        words: [
+            ["un vêtement", "ملبس"], ["une sorcière", "ساحرة"],
+            ["un clown", "مهرج"], ["une couleur", "لون"],
+            ["un magicien", "ساحر"], ["porter", "يرتدي"],
+            ["un pirate", "قرصان"], ["mettre", "يرتدي"],
+            ["un chapeau avec étoiles", "قبعة بنجوم"], ["melanger", "يخلط"],
+            ["un mélange de", "خليط من"], ["obtenir", "يحصل على"],
+            ["un carnaval", "كرنفال / مهرجان"], ["aujourd'hui", "اليوم"],
+            ["une fée", "جنية"], ["préféré (e)", "مفضل"]
+        ] 
+    }
+],
+"4primaire-unité7":[
+    { 
+        type: "aliments", 
+        title: "Les aliments (الأطعمة والمأكولات)", 
+        words: [
+            ["la banane", "الموز"], ["l'orange", "البرتقال"], ["la pomme", "التفاح"],
+            ["la pêche", "الخوخ"], ["la poire", "الكمثرى"], ["l'abricot ", "المشمش"],
+            ["la fraise", "الفراولة"], ["la pastèque", "البطيخ"], ["les frites", "البطاطس المحمرة"],
+            ["le fromage", "الجبنة"], ["le poisson", "السمك"], ["le poulet", "الفراخ"]
+        ] 
+    },
+    { 
+        type: "vocabulaire", 
+        title: "Vocabulaire et Verbes (الكلمات والأفعال)", 
+        words: [
+            ["un fruit", "فاكهة"], ["un goûter", "تصبيرة"],
+            ["le beurre", "الزبد"], ["une galette", "فطيرة محلاة"],
+            ["un menu", "قائمة طعام"], ["aimer tout", "يحب كل شئ"],
+            ["un plat", "طبق"], ["acheter", "يشتري"],
+            ["un panier", "سلة مشتريات"], ["frais", "طازج"],
+            ["le chocolat", "الشيكولاتة"], ["pour", "من أجل / لكي"],
+            ["la salade", "كابوتشي (خس)"], ["je voudrais....", "أنا أريد....."],
+            ["un dessert", "تحلية"]
+        ] 
+    }
+],
+"4primaire-unité8":[
+    { 
+        type: "activites_visuelles", 
+        title: "Activités (أنشطة وصور)", 
+        words: [
+            ["lire", "يقرأ"],
+            ["dessiner", "يرسم"],
+            ["compter", "يعد"],
+            ["chanter", "يغني"],
+            ["nager", "يعوم"],
+            ["danser", "يرقص"],
+            ["jongler", "يمارس ألعاب خفة اليد"],
+            ["voler", "يطير"]
+        ] 
+    },
+    { 
+        type: "expressions_sportives", 
+        title: "Jouer et Faire (الجدول البرتقالي - ألعاب وهوايات)", 
+        words: [
+            ["jouer au ballon", "يلعب بالكرة"], ["faire du vélo", "يمارس ركوب الدراجات"],
+            ["jouer au tennis", "يلعب تنس"], ["faire du roller", "يمارس رياضة التزلج"],
+            ["jouer au football", "يلعب كرة قدم"], ["faire du ski", "يمارس التزلج على الجليد"],
+            ["jouer à la poupée", "يلعب بالدمية (العروسة)"], ["faire du cheval", "يمارس ركوب الخيل"],
+            ["jouer aux billes", "يلعب بالبلي"], ["faire du judo", "يمارس الجودو"],
+            ["jouer du saxophone", "يعزف على الساكسفون"], ["faire de la moto", "يمارس ركوب الموتوسيكلات"],
+            ["jouer de la guitare", "يعزف على الجيتار"], ["faire de la natation", "يمارس السباحة"],
+            ["jouer de la flûte", "يعزف على الناي"], ["écouter de la musique", "يستمع إلى موسيقى"],
+            ["sauter à la corde", "يلعب نط الحبل"]
+        ] 
+    }
+],
+"5primaire-révision":[
+    { 
+        type: "vocab", 
+        title: "1. Vocabulaire (مفردات هامة)", 
+        words: [
+            ["un repas", "وجبة"], ["danser", "يرقص"],
+            ["un menu", "قائمة"], ["dormير", "ينام"],
+            ["un jus", "عصير"], ["manger", "يأكل"],
+            ["un bal", "حفل راقص"], ["commencer", "يبدأ"],
+            ["un réveil", "منبه"], ["secouer", "يهز"],
+            ["un jour", "يوم"], ["lever", "يرفع"],
+            ["un ماه", "شهر"], ["respirer", "يتنفس"],
+            ["un corps", "جسم"], ["tourner", "يلف"],
+            ["un visage", "وجه"], ["plier", "يلوى - يطوي"],
+            ["une heure", "ساعة"], ["décrire", "يصف"],
+            ["une boisson", "مشروب"], ["sonner", "يدق - يرن"],
+            ["une activité", "نشاط"], ["boire", "يشرب"],
+            ["une semaine", "أسبوع"], ["prendre", "يتناول"],
+            ["une seconde", "ثانية"], ["Je voudrais", "أنا أريد"],
+            ["une montre", "ساعة يد"], ["il y a", "يوجد"],
+            ["une pendule", "ساعة حائط ببندول"], ["à l'heure", "في الميعاد"],
+            ["une horloge", "ساعة حائط"], ["juste", "بالظبط"],
+            ["la journée", "الفترة النهارية"], ["mieux", "أحسن - أفضل"],
+            ["des lunettes", "نظارة"]
+        ] 
+    },
+    { 
+        type: "jours", 
+        title: "2. Les jours de la semaine (أيام الأسبوع)", 
+        words: [
+            ["samedi", "السبت"], ["mercredi", "الأربعاء"],
+            ["dimanche", "الأحد"], ["jeudi", "الخميس"],
+            ["lundi", "الإثنين"], ["vendredi", "الجمعة"],
+            ["mardi", "الثلاثاء"]
+        ] 
+    },
+    { 
+        type: "repas", 
+        title: "3. Les repas quotidiens (الوجبات اليومية)", 
+        words: [
+            ["le petit-déjeuner", "الإفطار"], ["le goûter", "التصبيرة"],
+            ["le déjeuner", "الغداء"], ["le dîner", "العشاء"]
+        ] 
+    },
+    { 
+        type: "aliments", 
+        title: "4. Des aliments et des boissons (أطعمة ومشروبات)", 
+        words: [
+            ["un gâteau", "جاتوه"], ["la tomate", "الطماطم"],
+            ["un croissant", "كرواسون"], ["des œufs", "بيض"],
+            ["un pain grillé", "خبز محمص"], ["des céréales", "حبوب غذائية"],
+            ["un yaourt", "زبادي"], ["le lait", "اللبن"],
+            ["un fromage", "جبن"], ["un café au lait", "قهوة باللبن"],
+            ["le beurre", "الزبدة"], ["un thé", "شاي"],
+            ["une baguette", "خبز فرنسي طويل"], ["un jus d’orange", "عصير برتقال"],
+            ["une confiture", "مربى"], ["un chocolat", "مشروب الكاكاو"],
+            ["une tartine", "شريحة خبز مدهون بالزبد"]
+        ] 
+    },
+    { 
+        type: "fruits", 
+        title: "5. Des fruits (الفواكه)", 
+        words: [
+            ["la pomme", "التفاح"], ["la banane", "الموز"],
+            ["la mandarine", "اليوسفي"], ["la pêche", "الخوخ"],
+            ["la pastèque", "البطيخ"], ["l'abricot", "المشمش"],
+            ["la fraise", "الفراولة"], ["l'ananas", "الأناناس"],
+            ["la poire", "الكمثرى"], ["l'orange", "البرتقال"]
+        ] 
+    },
+    { 
+        type: "corps", 
+        title: "6. Les parties du corps (أجزاء الجسم)", 
+        words: [
+            ["le bras", "الذراع"], ["la bouche", "الفم"],
+            ["le nez", "الأنف"], ["les yeux", "العينين"],
+            ["le pied", "القدم"], ["les cheveux", "الشعر"],
+            ["la tête", "الرأس"], ["les oreilles", "الأذنين"],
+            ["la main", "اليد"], ["les dents", "الأسنان"],
+            ["la jambe", "الساق"]
+        ] 
+    },
+    { 
+    type: "nombres", 
+    title: "7. Les nombres (الأرقام)", 
+    words: [
+        ["zéro", "صفر"], ["un", "واحد"], ["deux", "اثنين"], ["trois", "ثلاثة"], ["quatre", "أربعة"], ["cinq", "خمسة"], ["six", "ستة"], ["sept", "سبعة"], ["huit", "ثمانية"], ["neuf", "تسعة"],
+        ["dix", "عشرة"], ["onze", "أحد عشر"], ["douze", "اثنا عشر"], ["treize", "ثلاثة عشر"], ["quatorze", "أربعة عشر"], ["quinze", "خمسة عشر"], ["seize", "ستة عشر"], ["dix-sept", "سبعة عشر"], ["dix-huit", "ثمانية عشر"], ["dix-neuf", "تسعة عشر"],
+        ["vingt", "عشرون"], ["vingt et un", "واحد وعشرون"], ["vingt-deux", "اثنان وعشرون"], ["vingt-trois", "ثلاثة وعشرون"], ["vingt-quatre", "أربعة وعشرون"], ["vingt-cinq", "خمسة وعشرون"], ["vingt-six", "ستة وعشرون"], ["vingt-sept", "سبعة وعشرون"], ["vingt-huit", "ثمانية وعشرون"], ["vingt-neuf", "تسعة وعشرون"],
+        ["trente", "ثلاثون"], ["trente et un", "واحد وثلاثون"], ["trente-deux", "اثنان وثلاثون"], ["trente-trois", "ثلاثة وثلاثون"], ["trente-quatre", "أربعة وثلاثون"], ["trente-cinq", "خمسة وثلاثون"], ["trente-six", "ستة وثلاثون"], ["trente-sept", "سبعة وثلاثون"], ["trente-huit", "ثمانية وثلاثون"], ["trente-neuf", "تسعة وثلاثون"],
+        ["quarante", "أربعون"], ["quarante et un", "واحد وأربعون"], ["quarante-deux", "اثنان وأربعون"], ["quarante-trois", "ثلاثة وأربعون"], ["quarante-quatre", "أربعة وأربعون"], ["quarante-cinq", "خمسة وأربعون"], ["quarante-six", "ستة وأربعون"], ["quarante-sept", "سبعة وأربعون"], ["quarante-huit", "ثمانية وأربعون"], ["quarante-neuf", "تسعة وأربعون"], ["cinquante", "خمسون"]
+    ] 
+}
+],
+"5primaire-unité4":[
+    { 
+        type: "farm_animals", 
+        title: "1. Les animaux de la ferme (حيوانات المزرعة)", 
+        words: [
+            ["un mouton", "خروف"], ["une chèvre", "ماعز"],
+            ["une vache", "بقرة"], ["un âne", "حمار"],
+            ["un coq", "ديك"], ["une poule", "دجاجة"],
+            ["un dindon", "ديك رومي"], ["un canard", "بطة"]
+        ] 
+    },
+    { 
+        type: "jungle_animals", 
+        title: "2. Les animaux de la jungle (حيوانات الغابة/الأدغال)", 
+        words: [
+            ["un tigre", "نمر"], ["un lion", "أسد"],
+            ["un éléphant", "فيل"], ["un ours", "دب"],
+            ["un papillon", "فراشة"]
+        ] 
+    },
+    { 
+        type: "house_animals", 
+        title: "3. Les animaux de la maison (حيوانات المنزل)", 
+        words: [
+            ["un chat", "قطة"], ["un chien", "كلب"],
+            ["une perruche", "ببغاء"], ["un poisson rouge", "سمكة حمراء (للزينة)"],
+            ["une tortue", "سلحفاة"], ["un hamster", "حيوان قارض"]
+        ] 
+    },
+    { 
+        type: "vocabulaire", 
+        title: "4. Vocabulaire et Verbes (مفردات وأفعال)", 
+        words: [
+            ["un animal", "حيوان"], ["des skis", "ألواح التزلج"],
+            ["un conte", "قصة خرافية"], ["habiter", "يسكن"],
+            ["un monstre", "وحش"], ["vivre", "يعيش"],
+            ["un cri", "صرخة (صوت الحيوان)"], ["se trouver", "يوجد"],
+            ["le bruit", "الضوضاء"], ["s'éloigner", "يبتعد"],
+            ["le calme", "الهدوء"], ["visiter", "يزور"],
+            ["un mur", "حائط"], ["cacher", "يخفي / يخبئ"],
+            ["un appartement", "شقة"], ["domestique", "أليف"],
+            ["une pièce", "حجرة"], ["sauvage", "متوحش"],
+            ["le garde-manger", "غرفة خزين الطعام"], ["curieuse", "فضولية"],
+            ["la nature", "الطبيعة"], ["voilà", "ها هو / ها هي"],
+            ["la campagne", "الريف"], ["dans", "في"],
+            ["une boîte", "صندوق / علبة"], ["maintenant", "الآن"],
+            ["les oiseaux", "العصافير"], ["Comme il est beau !", "كم هو جميل !"]
+        ] 
+    }
+],
+"5primaire-unité5":[
+    { 
+        type: "transports", 
+        title: "1. Les moyens de transport (وسائل المواصلات)", 
+        words: [
+            ["un taxi", "تاكسي"], ["un bus", "أتوبيس"],
+            ["une voiture", "سيارة"], ["un vélo", "دراجة"],
+            ["une moto", "موتوسيكل"], ["un métro", "مترو"],
+            ["un tramway", "ترام"], ["un train", "قطار"],
+            ["un bateau", "مركب"], ["un avion", "طائرة"]
+        ] 
+    },
+    { 
+        type: "vocabulaire", 
+        title: "2. Vocabulaire et Adjectifs (مفردات وصفات)", 
+        words: [
+            ["un zoo", "حديقة حيوان"], ["chercher", "يبحث عن"],
+            ["un cinéma", "سينما"], ["plus ≠ moins", "أكثر ≠ أقل"],
+            ["un studio", "استوديو"], ["rapide", "سريع"],
+            ["un bal", "حفل راقص"], ["cher", "غالي الثمن"],
+            ["un cheval", "حصان"], ["confortable", "مريح"],
+            ["un passager", "راكب"], ["facile", "سهل"],
+            ["un voyageur", "مسافر"], ["tous", "الكل / الجميع"],
+            ["un moyen de transport", "وسيلة مواصلات"]
+        ] 
+    }
+],
+
+"5primaire-unité3":[
+    { 
+        type: "corps_humain", 
+        title: "1. Les parties du corps humain (أجزاء جسم الإنسان)", 
+        words: [
+            ["la main", "اليد"], ["le bras", "الذراع"], ["le pied", "القدم"],
+            ["la jambe", "الساق"], ["la tête", "الرأس"], ["le nez", "الأنف"],
+            ["les oreilles", "الأذنين"], ["la bouche", "الفم"], ["les yeux", "العينين"]
+        ] 
+    },
+    { 
+        type: "gymnastique", 
+        title: "2. Des exercices de la gymnastique (تمارين التربية البدنية)", 
+        words: [
+            ["Levez les bras !", "ارفعوا الأذرع !"],
+            ["Tournez la tête !", "لفوا الرأس !"],
+            ["Secouez les mains !", "هزوا الأيدي !"],
+            ["Sautez sur un pied !", "اقفزوا على قدم واحدة !"],
+            ["Pliez les jambes !", "اثنوا الساق !"]
+        ] 
+    },
+    { 
+        type: "vocabulaire_global", 
+        title: "3. Vocabulaire et Expressions (مفردات وتعبيرات)", 
+        words: [
+            ["un gymnase", "صالة ألعاب رياضية"], ["le physique", "الحالة البدنية"],
+            ["un exercice", "تمرين"], ["les cheveux", "الشعر"],
+            ["un sportif", "شخص رياضي"], ["des sourcils", "حواجب"],
+            ["un monstre", "وحش"], ["une partie", "جزء"],
+            ["un voisin", "جار"], ["une activité", "نشاط"],
+            ["un rôle", "دور"], ["une femme", "إمرأة"],
+            ["un portrait", "لوحة (ملامح الوجه)"], ["une voisine", "جارة"],
+            ["un visage", "وجه"], ["les dents", "الأسنان"],
+            ["un homme", "رجل"], ["des lunettes", "نظارة"],
+            ["le corps", "الجسم"]
+        ] 
+    },
+    { 
+        type: "verbes_adjectifs", 
+        title: "4. Verbes et Adjectifs (أفعال وصفات)", 
+        words: [
+            ["danser", "يرقص"], ["blond", "أشقر"],
+            ["donner", "يعطي"], ["châtain", "كستنائي"],
+            ["dessiner", "يرسم"], ["brun", "قمحي"],
+            ["commencer", "يبدأ"], ["roux", "أصهب"],
+            ["marcher", "يمشي"], ["clair", "فاتح"],
+            ["nager", "يعوم"], ["joli", "جميل"],
+            ["écouter", "يسما"], ["effroyable", "مخيف"],
+            ["respirer", "يتنفس"], ["d'accord", "موافق"],
+            ["regarder", "يشاهد"], ["très bien", "جيد جداً"],
+            ["courir", "يجري"], ["attention", "انتبه"],
+            ["voir", "يرى"], ["mieux", "أفضل"],
+            ["beau", "جميل"], ["pour", "من أجل"],
+            ["nouveau", "جديد"], ["sur", "على"],
+            ["grand", "كبير"], ["faire du sport", "يمارس رياضة"],
+            ["maigre", "نحيف"], ["faire de la gymnastique", "يمارس التربية البدنية"],
+            ["gros", "سمين"]
+        ] 
+    }
+],
+
+"6primaire-révision": [
+    { 
+        type: "vocab_general", 
+        title: "1. Vocabulaire (مفردات عامة)", 
+        words: [
+            ["un monument", "أثر تاريخي"], ["une ville", "مدينة"],
+            ["un touriste", "سائح"], ["une capitale", "عاصمة"],
+            ["un continent", "قارة"], ["une région", "منطقة - إقليم"],
+            ["un pays", "بلد"], ["une nationalité", "جنسية"],
+            ["un voyageur", "مسافر"], ["une forêt", "غابة"],
+            ["un lieu", "مكان"], ["une ferme", "مزرعة"],
+            ["un correspondant", "مراسل"], ["des vacances", "أجازة"],
+            ["un moyen de transport", "وسيلة مواصلات"], ["visiter", "يزور"],
+            ["le ciel", "السماء"], ["voyager", "يسافر"]
+        ] 
+    },
+    { 
+        type: "transports_et_sites", 
+        title: "2. Transports et Sites (المواصلات والمعالم)", 
+        words: [
+            ["un bus", "أتوبيس"], ["un bateau", "مركب"],
+            ["un métro", "مترو"], ["un bateau-mouche", "مركب سياحي"],
+            ["un taxi", "تاكسي"], ["une voiture", "سيارة"],
+            ["un train", "قطار"], ["un vélo", "دراجة"],
+            ["un tram", "ترام"], ["une moto", "موتوسيكل"],
+            ["un avion", "طائرة"], ["la tour Eiffel", "برج إيفل"],
+            ["l'Arc de Triomphe", "قوس النصر"], ["Notre-Dame de Paris", "كاتدرائية نوتردام"],
+            ["le Sacré-Cœur", "كنيسة القلب المقدس"], ["le musée du Louvre", "متحف اللوفر"]
+        ] 
+    },
+    { 
+        type: "vocab_supplementaire", 
+        title: "3. Vocabulaire Supplémentaire (كلمات وأفعال إضافية)", 
+        words: [
+            ["un ami", "صديق"], ["dessiner", "يرسم"],
+            ["un voisin", "جار"], ["présenter", "يقدم شخص"],
+            ["un âge", "عمر / سن"], ["se présenter", "يقدم نفسه"],
+            ["un goût", "ذوق / ميل"], ["manger", "يأكل"],
+            ["un animal familier", "حيوان أليف"], ["jongler", "يلعب ألعاب خفة اليد"],
+            ["un rat", "فأر كبير"], ["rencontrer", "يقابل"],
+            ["un corbeau", "غراب"], ["porter", "يحمل / يرتدي"],
+            ["un renard", "ثعلب"], ["décrire", "يصف"],
+            ["un jouet", "لعبة"], ["lire", "يقرأ"],
+            ["un ours en peluche", "دب من الفرو"], ["peindre", "يرسم (يلون)"],
+            ["la bûche", "نوع من الحلوى"], ["faire du cheval", "يمارس ركوب الخيل"],
+            ["des rollers", "حذاء بعجل"], ["faire du ski", "يمارس التزلج على الجليد"],
+            ["les billes", "البلي"], ["faire des tours de magie", "يقوم بخدع سحرية"],
+            ["des vêtements", "ملابس"], ["nouvelle", "جديدة"],
+            ["des aliments", "أغذية"], ["même", "نفس"],
+            ["saluer", "يحيي"], ["puis", "ثم"]
+        ] 
+    },
+    { 
+        type: "temps_et_horaires", 
+        title: "4. Le temps et les horaires (الوقت والمواعيد)", 
+        words: [
+            ["le matin", "الصباح"], ["mettre", "يرتدي"],
+            ["le soir", "المساء"], ["courir", "يجري"],
+            ["le midi", "منتصف النهار (12 ظهراً)"], ["vite !", "بسرعة"],
+            ["l'après-midi", "بعد الظهر"], ["toujours", "دائماً"],
+            ["le petit-déjeuner", "الإفطار"], ["juste = pile", "بالظبط"],
+            ["un sac", "شنطة"], ["ensuite", "بعد ذلك"],
+            ["une heure", "ساعة (زمنية)"], ["avant", "قبل"],
+            ["une minute", "دقيقة"], ["après", "بعد"],
+            ["une brosse à dents", "فرشاة أسنان"], ["précis", "محدد"],
+            ["les horaires", "المواعيد"], ["et quart", "وربع"],
+            ["des tartines", "شرائح خبز مغطاه بالزبد"], ["moins le quart", "إلا ربع"],
+            ["bouger", "يتحرك"], ["être à l'heure", "في الميعاد"],
+            ["rêver", "يحلم"], ["être en avance", "مبكراً"],
+            ["manger", "يأكل"], ["secouer les bras", "يهز الذراعين"],
+            ["réveiller", "يوقظ"], ["se remettre au lit", "يعود مرة ثانية إلى الفراش"]
+        ] 
+    }
+],
+"6primaire-unité4":[
+    { 
+        type: "vocabulaire", 
+        title: "1. Écoute et répète (مفردات وأفعال)", 
+        words: [
+            ["un emploi du temps", "جدول الحصص"], ["une récréation", "فسحة"],
+            ["un jour", "يوم"], ["les matières scolaires", "المواد الدراسية"],
+            ["un cours", "حصة"], ["aimer", "يحب"],
+            ["un repas chaud", "وجبة ساخنة"], ["adorer", "يعشق"],
+            ["un jour de repos", "يوم راحة"], ["préférer", "يفضل"],
+            ["les horaires", "المواعيد"], ["détester", "يكره"],
+            ["les devoirs", "الواجبات"], ["travailler", "يعمل"],
+            ["les goûts scolaires", "الميول الدراسية"], ["commencer", "يبدأ"],
+            ["une semaine", "أسبوع"], ["finir", "ينهي"],
+            ["une carte", "خريطة"], ["durer", "يستغرق"],
+            ["une école", "مدرسة"], ["préféré", "مفضل"],
+            ["une classe", "فصل"], ["ici", "هنا"],
+            ["une cantine", "كانتين"], ["après", "بعد"],
+            ["une langue", "لغة"], ["bof !", "تعبير يدل على الضجر"]
+        ] 
+    }
+],
+
+"6primaire-unité5":[
+    { 
+        type: "vocabulaire", 
+        title: "1. Vocabulaire et Verbes (مفردات وأفعال)", 
+        words: [
+            ["un mois", "شهر"], ["fêter", "يحتفل"],
+            ["un anniversaire", "عيد ميلاد"], ["une année", "عام"],
+            ["un fils / un fiston", "ابن"], ["la date de naissance", "تاريخ الميلاد"],
+            ["un mari", "زوج"], ["grand", "كبير"],
+            ["un arbre généalogique", "شجرة العائلة"], ["petit", "صغير"],
+            ["le premier", "الأول"], ["être né", "مولود"],
+            ["le dernier", "الأخير"], ["faire du cinéma", "يعمل في مجال السينما"],
+            ["une famille", "أسرة / عائلة"], ["il y a", "يوجد"],
+            ["une fille", "بنت"], ["voilà", "ها هو / ها هي"],
+            ["une femme", "زوجة"], ["comme", "مثل"],
+            ["une photo", "صورة"], ["moi aussi", "أنا أيضاً"],
+            ["une fête", "حفلة / عيد"]
+        ] 
+    },
+    { 
+        type: "famille", 
+        title: "2. Les membres de la famille (أفراد العائلة)", 
+        words: [
+            ["les grands-parents", "الأجداد"], ["le frère", "الأخ"],
+            ["le grand-père / papi", "الجد"], ["la sœur", "الأخت"],
+            ["la grand-mère / mamie", "الجدة"], ["l'oncle / tonton", "العم / الخال"],
+            ["les parents", "الوالدين"], ["la tante / tata", "العمة / الخالة"],
+            ["le père / papa", "الأب"], ["le cousin", "ابن العم / ابن الخال"],
+            ["la mère / maman", "الأم"], ["la cousine", "ابنة العم / ابنة الخال"]
+        ] 
+    }
+],
+
+
+
+
+
+
+
+
+
+        // محتوى أولى ثانوي وحدة 3 درس 1 (من ملفك)
+"1secondaire-unité3-leçon1":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un lycée", "مدرسة ثانوي"],
+            ["un lycéen", "طالب ثانوي"],
+            ["un contrôle", "اختبار"],
+            ["un examen", "امتحان"],
+            ["un objet", "شئ"],
+            ["un repas", "وجبة"],
+            ["un déjeuner", "غداء"],
+            ["un restaurant", "مطعم"],
+            ["un portemanteau", "شماعة بالطو"],
+            ["un lieu", "مكان"],
+            ["un espace", "مكان - مساحة"],
+            ["un lecteur", "قارئ"],
+            ["un laboratoire", "معمل"],
+            ["un vélo", "دراجة"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une carte", "خريطة"],
+            ["une description", "وصف"],
+            ["une partie", "جزء"],
+            ["une piscine", "حمام سباحة"],
+            ["une cantine", "كانتين (مقصف مدرسي)"],
+            ["une bibliothèque", "مكتبة (للقراءة)"],
+            ["la lecture", "القراءة"],
+            ["une plante", "نبات"],
+            ["une grille", "سياج / سور"],
+            ["une famille", "عائلة / أسرة"],
+            ["la gymnastique", "التربية البدنية"],
+            ["une récréation", "فسحة"],
+            ["une fois", "مرة"],
+            ["une photo", "صورة"],
+            ["une bande dessinée", "قصة مصورة"],
+            ["les mathématiques", "الرياضيات"],
+            ["des affaires", "أشياء / أغراض"],
+            ["des recherches", "أبحاث"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["prendre", "يتناول"],
+            ["arriver", "يصل"],
+            ["manger", "يأكل"],
+            ["écouter", "يسمع"],
+            ["regarder", "يشاهد"],
+            ["jouer", "يلعب"],
+            ["étudier", "يذاكر"],
+            ["surfer sur Internet", "يتصفح الإنترنت"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["il y a", "يوجد"],
+            ["combien de", "كم عدد"],
+            ["seulement", "فقط"],
+            ["tous / toutes", "كل"],
+            ["propre", "نظيف"],
+            ["moderne", "حديث"],
+            ["idéal", "مثالي"]
+        ]
+    }
+],
+        // أضف محتوى الدروس الأخرى هنا بنفس الطريقة
+"1secondaire-unité3-leçon2":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un emploi du temps", "جدول مواعيد الحصص"],
+            ["un cours", "حصة"],
+            ["un goût", "ميل / رغبة"],
+            ["un jour", "يوم"],
+            ["un congé", "عطلة"],
+            ["un rendez-vous", "موعد / لقاء"],
+            ["un personnage", "شخصية"],
+            ["le début", "البداية"],
+            ["le matin", "الصباح"],
+            ["le midi", "منتصف النهار"],
+            ["l’après-midi", "بعد الظهر"],
+            ["le soir", "المساء"],
+            ["le minuit", "منتصف الليل"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une semaine", "أسبوع"],
+            ["une journée", "فترة النهار"],
+            ["une heure", "ساعة زمنية"],
+            ["une demi-heure", "نصف ساعة"],
+            ["une langue", "لغة"],
+            ["une activité", "نشاط"],
+            ["une musique", "موسيقى"],
+            ["la fin", "النهاية"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["commencer", "يبدأ"],
+            ["terminer", "ينهي"],
+            ["se terminer", "ينتهي"],
+            ["exprimer", "يعبر عن"],
+            ["expliquer", "يشرح"],
+            ["préférer", "يفضل"],
+            ["savoir", "يعرف"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["préféré", "مفضل"],
+            ["sauf", "ما عدا"],
+            ["mais", "لكن"],
+            ["pendant", "أثناء / خلال"],
+            ["pile / juste", "بالضبط / تماماً"],
+            ["par semaine", "أسبوعياً"],
+            ["par jour", "يومياً"],
+            ["chaque", "كل"],
+            ["tout", "كل"],
+            ["c'est facile !", "هذا سهل"],
+            ["c'est difficile !", "هذا صعب"],
+            ["en avance", "مبكراً (قبل الميعاد)"]
+        ]
+    }
+],
+"1secondaire-unité3-leçon3":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un CDI", "قاعة الوسائط المتعددة"],
+            ["un magazine", "مجلة"],
+            ["un roman", "رواية"],
+            ["un texte", "نص"],
+            ["un DVD", "قرص فيديو رقمى"],
+            ["un reportage", "تحقيق صحفى"],
+            ["un CD", "قرص مضغوط"],
+            ["un portable", "تليفون محمول"],
+            ["un atlas", "أطلس (كتاب خرائط)"],
+            ["un établissement", "مؤسسة / منشأة"],
+            ["des devoirs", "واجبات"],
+            ["des jeux", "ألعاب"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une histoire", "قصة / حكاية"],
+            ["une traduction", "ترجمة"],
+            ["une encyclopédie", "موسوعة / دائرة معارف"],
+            ["une fonction", "وظيفة / عمل"],
+            ["une recherche", "بحث"],
+            ["une information", "معلومة"],
+            ["une vignette", "مكان مخصص للكلام فى القصة المصورة"],
+            ["une connexion", "اتصال / رابط"],
+            ["une définition", "تعريف"],
+            ["des publications", "منشورات / مطبوعات"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["prêter", "يقرض / يسلف"],
+            ["s'amuser", "يتسلى"],
+            ["chercher", "يبحث عن"],
+            ["traduire", "يترجم"],
+            ["trouver", "يجد"],
+            ["répondre", "يجيب"],
+            ["utiliser", "يستخدم"],
+            ["lire", "يقرأ"],
+            ["dessiner", "يرسم"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["bien sûr !", "بالتأكيد"],
+            ["en ligne", "على النت / على الخط"],
+            ["aussi", "أيضاً"],
+            ["longue", "طويلة"],
+            ["mignon", "لطيف / ظريف"],
+            ["surfer sur Internet", "يتصفح النت"],
+            ["avoir besoin de", "في حاجة إلى"],
+            ["poser une question", "يوجه سؤال"]
+        ]
+    }
+],
+"1secondaire-unité4-leçon1":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["le physique", "البنية الجسدية"],
+            ["un athlète", "رياضي"],
+            ["le visage", "الوجه"],
+            ["le corps", "الجسم"],
+            ["un médecin", "طبيب"],
+            ["un dentiste", "طبيب أسنان"],
+            ["un malade", "مريض"],
+            ["un hôpital", "مستشفى"],
+            ["un problème", "مشكلة"],
+            ["le bruit", "الضوضاء"],
+            ["un chat", "قط"],
+            ["un chien", "كلب"],
+            ["des traits", "ملامح"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une douleur", "ألم"],
+            ["une taille", "قامة / طول"],
+            ["une casquette", "كاسكيت / كاب"],
+            ["la main droite", "اليد اليمنى"],
+            ["la main gauche", "اليد اليسرى"],
+            ["l'eau", "الماء"],
+            ["des lunettes", "نظارة"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["toucher", "يلمس"],
+            ["marcher", "يمشي"],
+            ["manger", "يأكل"],
+            ["goûter", "يتذوق"],
+            ["porter", "يرتدي"],
+            ["attraper", "يلتقط / يمسك"],
+            ["travailler", "يعمل"],
+            ["entrer", "يدخل"],
+            ["voir", "يرى"],
+            ["sentir", "يشم"],
+            ["ouvrir", "يفتح"],
+            ["écrire", "يكتب"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["physique", "بدني"],
+            ["mince", "رشيق"],
+            ["rapide", "سريع"],
+            ["maigre", "نحيف"],
+            ["roux", "أصهب"],
+            ["mignon", "ظريف / لطيف"],
+            ["gaucher", "أعسر (يستخدم اليد اليسرى)"],
+            ["châtain", "كستنائي"],
+            ["musclé", "مفتول العضلات"],
+            ["avoir mal à", "يشعر بألم في"]
+        ]
+    }
+],
+"1secondaire-unité4-leçon2":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un arbre généalogique", "شجرة العائلة"],
+            ["un membre", "عضو / فرد"],
+            ["un enfant", "طفل"],
+            ["un mari", "زوج"],
+            ["un époux", "زوج"],
+            ["un fils", "ابن"],
+            ["un message", "رسالة"],
+            ["un magazine de mode", "مجلة متخصصة في الموضة"],
+            ["un blog", "مدونة (على النت)"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une famille", "أسرة / عائلة"],
+            ["une femme", "امرأة / زوجة"],
+            ["une épouse", "زوجة"],
+            ["une fille", "بنت / ابنة"],
+            ["une enfant", "طفلة"],
+            ["une barbe", "لحية (شعر الذقن)"],
+            ["une poupée", "دمية (عروسة لعبة)"],
+            ["une peluche", "دبدوب من الفرو"],
+            ["les vacances", "الأجازة"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Les membres de la famille (أفراد العائلة)",
+        words: [
+            ["les grands-parents", "الأجداد"],
+            ["le grand-père", "الجد"],
+            ["la grand-mère", "الجدة"],
+            ["les parents", "الوالدين"],
+            ["le père", "الأب"],
+            ["la mère", "الأم"],
+            ["le frère", "الأخ"],
+            ["la sœur", "الأخت"],
+            ["l'oncle", "العم / الخال"],
+            ["la tante", "العمة / الخالة"],
+            ["le cousin", "ابن العم / ابن الخال"],
+            ["la cousine", "ابنة العم / ابنة الخال"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["identifier", "يحدد هوية (شخص)"],
+            ["présenter", "يقدم"],
+            ["porter", "يرتدي"],
+            ["donner", "يعطي"],
+            ["se composer de", "يتكون من"],
+            ["lire", "يقرأ"]
+        ]
+    },
+    {
+        type: "adj",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["grand", "كبير"],
+            ["petit", "صغير"],
+            ["seul", "بمفرده"],
+            ["chez", "عند"],
+            ["voici", "ها هو / ها هي"]
+        ]
+    }
+],
+// ================= الصف الأول الثانوي =================
+
+// الوحدة 4 - الدرس 3
+"1secondaire-unité4-leçon3":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un parc", "متنزه عام"],
+            ["un café", "مقهى / كافيه"],
+            ["un zoo", "حديقة حيوان"],
+            ["un supermarché", "سوبر ماركت"],
+            ["un travail", "عمل"],
+            ["un chat", "شات (دردشة على النت)"],
+            ["le sport", "الرياضة"],
+            ["un ballon", "كرة كبيرة"],
+            ["le loisir", "وقت الفراغ"],
+            ["des loisirs", "هوايات"],
+            ["des jeux vidéo", "ألعاب الفيديو"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une activité", "نشاط"],
+            ["une profession", "مهنة"],
+            ["une chanson", "أغنية"],
+            ["une boulangerie", "مخبز"],
+            ["une épicerie", "محل بقالة"],
+            ["une salle de sport", "صالة ألعاب رياضية"],
+            ["une station de ski", "مركز تزحلق على الجليد"],
+            ["la montagne", "الجبل"],
+            ["la campagne", "الريف"],
+            ["une bibliothèque municipale", "مكتبة (محلية / بلدية)"],
+            ["une pharmacie", "صيدلية"],
+            ["une patinoire", "ساحة تزلج"],
+            ["la mer", "البحر"],
+            ["une balle", "كرة صغيرة"],
+            ["une course", "سباق"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Les sports (الألعاب الرياضية)",
+        words: [
+            ["le tennis", "التنس"],
+            ["le cyclisme", "رياضة ركوب الدراجات"],
+            ["le karaté", "الكاراتيه"],
+            ["le football", "كرة القدم"],
+            ["le basket", "كرة السلة"],
+            ["le ski", "التزلج على الجليد (باستخدام الزلاجات)"],
+            ["le patin à glace", "التزلج على الجليد (بأحذية تزلّج)"],
+            ["le skate", "التزلج على لوح بعجل"],
+            ["la natation", "السباحة"],
+            ["la gymnastique", "الجمباز"],
+            ["l'équitation", "الفروسية"],
+            ["le judo", "الجودو"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["passer", "يقضي"],
+            ["nager", "يعوم"],
+            ["rentrer", "يعود"],
+            ["réserver", "يحجز"],
+            ["installer", "يضع"],
+            ["trouver", "يجد"],
+            ["préparer", "يُعد / يُجهز"],
+            ["organiser", "ينظم / يجهز"],
+            ["pratiquer", "يمارس"],
+            ["faire", "يفعل / يمارس"],
+            ["jouer", "يلعب"]
+        ]
+    },
+    {
+        type: "adj",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["devant", "أمام"],
+            ["en autobus", "بالأتوبيس"],
+            ["un film d'horreur", "فيلم رعب"],
+            ["un film de science-fiction", "فيلم خيال علمي"],
+            ["nécessaire", "ضروري"],
+            ["Alors !", "إذاً"],
+            ["À demain", "إلى الغد"]
+        ]
+    }
+],
+"2secondaire-unité3-leçon1":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un look", "المظهر العام لشخص / الهندام"],
+            ["un looké", "شخص مهندم / أنيق الملبس"],
+            ["un avis", "رأي"],
+            ["un habit", "زي - ملبس"],
+            ["un uniforme", "زي موحد"],
+            ["un prix", "سعر"],
+            ["un vendeur", "بائع"],
+            ["un client", "زبون"],
+            ["un mannequin", "عارض/ عارضة أزياء"],
+            ["un ornement", "زينة / زخرفة"],
+            ["un magasin de vêtements", "محل ملابس"],
+            ["un genre", "نوع"],
+            ["un coloris", "لون"],
+            ["un modèle", "موديل / نموذج"],
+            ["un style", "نمط ( ستايل ) اللبس"],
+            ["un désordre", "فوضى / عدم نظام"],
+            ["un défilé de mode", "عرض أزياء"],
+            ["un concert", "حفل موسيقي"],
+            ["des motifs", "زخارف ونقوش (الملابس)"],
+            ["des dessins", "رسومات"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["la mode", "الموضة"],
+            ["une tenue", "زي / ملبس / هيئة"],
+            ["une forme", "شكل"],
+            ["une taille", "مقاس"],
+            ["une liste", "قائمة"],
+            ["une appréciation", "استحسان - تقدير"],
+            ["une couleur", "لون"],
+            ["une opinion", "رأي"],
+            ["une marque", "ماركة"],
+            ["une boutique", "دكان صغير"],
+            ["une matière", "مادة خام"],
+            ["une préférence", "تفضيل"],
+            ["une cabine d'essayage", "غرفة قياس الملابس"],
+            ["une vitrine", "واجهة عرض (محل)"],
+            ["des manches", "أكمام"],
+            ["une session photo", "جلسة تصوير (فوتوسيشن)"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Les Vêtements (الملابس)",
+        words: [
+            ["un costume", "بدلة"],
+            ["un manteau", "بالطو"],
+            ["un pantalon", "بنطلون"],
+            ["un sweat", "سويت شيرت"],
+            ["un survêtement", "ترنج"],
+            ["un pyjama", "بيچاما"],
+            ["un maillot de bain", "مايوه سباحة"],
+            ["un gilet", "صديري / چيليه"],
+            ["un anorak", "سويتر مبطن فرو"],
+            ["un tailleur", "طقم من قطعتين (تايير)"],
+            ["un jean", "بنطلون چينز"],
+            ["un tee-shirt", "تيشرت"],
+            ["un pull", "بلوڤر"],
+            ["un short", "شورت"],
+            ["un chemisier", "بلوزه"],
+            ["un blouson", "چاكت قصير"],
+            ["un imperméable", "بالطو واقى من المطر"],
+            ["une veste", "چاكت"],
+            ["une jupe", "چيبة / تنوره"],
+            ["une robe", "فستان"],
+            ["une chemise", "قميص"],
+            ["une blouse", "بلوزة"],
+            ["des chaussettes", "جورب"],
+            ["des leggings", "بنطلون استرتش"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["porter", "يرتدي"],
+            ["ranger", "يرتب"],
+            ["s'habiller", "يرتدي ملابسه"],
+            ["coûter", "يتكلف"],
+            ["penser", "يعتقد / يفكر"],
+            ["vendre", "يبيع"],
+            ["donner", "يعطى"],
+            ["payer", "يدفع"],
+            ["trier", "ينتقى/ يفرز"],
+            ["trouver", "يجد"],
+            ["essayer", "يقيس / يجرب"],
+            ["acheter", "يشترى"],
+            ["négocier", "يتشاور/ يتفاوض"],
+            ["indiquer", "يشير إلى - يوضح"],
+            ["proposer", "يقترح"],
+            ["admirer", "يُعجب بـ"],
+            ["apprécier", "يستحسن"],
+            ["exprimer", "يعبر عن"]
+        ]
+    },
+    {
+        type: "adj",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["chic", "أنيق/ شيك"],
+            ["élégant", "أنيق"],
+            ["joli", "جميل"],
+            ["seul", "بمفرده"],
+            ["uni", "سادة"],
+            ["original", "أصلي"],
+            ["démodé", "موضة قديمة"],
+            ["serré", "ضيق"],
+            ["large", "واسع"],
+            ["long", "طويل"],
+            ["court", "قصير"],
+            ["beau", "جميل"],
+            ["bon", "جيد / رائع"],
+            ["nul", "سيئ / تافه"],
+            ["clair", "فاتح"],
+            ["foncé", "غامق"],
+            ["bleu marine", "أزرق بحري غامق (كحلى)"],
+            ["bleu ciel", "أزرق سماوى فاتح (لبنى)"],
+            ["en blanc", "يكسوه اللون الأبيض"],
+            ["adorable", "رائع"],
+            ["énorme", "ضخم"],
+            ["trop", "جداً جداً (أكثر من اللازم)"],
+            ["sans manches", "بدون أكمام"],
+            ["vite", "بسرعة"],
+            ["en allant", "عند الذهاب"],
+            ["à la mode", "على الموضة"],
+            ["faire les boutiques", "يتسوق"],
+            ["aller bien", "يناسب"],
+            ["être fan de", "مُغرم بـ"],
+            ["Ça te plaît ?", "هل هذا يعجبك ؟"],
+            ["Ça me va ?", "هل هذا يناسبنى ؟"],
+            ["je ne sais pas", "لا أعرف"],
+            ["plus tard", "فيما بعد"]
+        ]
+    }
+],
+"2secondaire-unité3-leçon2":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un accessoire", "اكسسوار"],
+            ["un concert", "حفل موسيقى"],
+            ["le poignet", "معصم اليد"],
+            ["un portefeuille", "محفظة"],
+            ["un foulard", "وشاح (على الرأس أو حول الرقبة)"],
+            ["un bandeau", "عصابة للرأس / بندانة"],
+            ["le cou", "الرقبة - العنق"],
+            ["les doigts", "الأصابع"],
+            ["des chaussons", "حذاء خفيف"],
+            ["des mouchoirs", "مناديل"],
+            ["un magasin d'accessoires", "محل إكسسوارات"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une entrée", "مدخل"],
+            ["la main", "اليد"],
+            ["l'épaule", "الكتف"],
+            ["la tête", "الرأس"],
+            ["une pointure", "مقاس حذاء"],
+            ["une chaîne", "سلسلة / قلادة"],
+            ["une broche", "بروش (دبوس مشبك)"],
+            ["une occasion", "مناسبة / فرصة"],
+            ["une paire de chaussures", "زوج من الأحذية"],
+            ["des lunettes de vue", "نظارة طبية"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["essayer", "يقيس / يجرب"],
+            ["protéger", "يحمى"],
+            ["emprunter", "يستعير / يستلف"],
+            ["fixer", "يثبت / يضع"],
+            ["coûter", "يتكلف"],
+            ["changer", "يُغير / يُبدل"],
+            ["organiser", "يُنظم"],
+            ["voir", "يرى"],
+            ["sortir", "يخرج"],
+            ["attendre", "ينتظر"],
+            ["plaire", "يعجب"],
+            ["mettre", "يرتدي"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["cher", "غالى"],
+            ["chère", "غالية"],
+            ["génial", "رائع"],
+            ["parfait", "ممتاز / بارع"],
+            ["élégant", "أنيق"],
+            ["content", "مسرور"],
+            ["chaud", "حار / ساخن"],
+            ["en or", "من الذهب"],
+            ["en argent", "من الفضة"],
+            ["en cuir", "من الجلد"],
+            ["en laine", "من الصوف"],
+            ["en coton", "من القطن"],
+            ["à carreaux", "بكاروهات"],
+            ["à rayures", "مخطط / مقلم"],
+            ["à pois", "منقط"],
+            ["à fleurs", "منقوش بالورد"],
+            ["à lacets", "برباط"],
+            ["à talons", "بكعب"],
+            ["plus ... que", "أكثر ... من"],
+            ["moins ... que", "أقل ... من"],
+            ["aussi ... que", "مساوٍ لـ ... فى"]
+        ]
+    }
+],
+"2secondaire-unité3-leçon3":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un souhait", "أمنية"],
+            ["un supermarché", "سوبر ماركت"],
+            ["un projet", "مشروع"],
+            ["l'achat", "الشراء"],
+            ["un mariage", "زواج"],
+            ["l'argent", "النقود"],
+            ["un succès", "نجاح"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une permission", "إذن / تصريح"],
+            ["une surprise", "مفاجأة"],
+            ["une chanson", "أغنية"],
+            ["une boulangerie", "مخبز"],
+            ["une scène", "مشهد"],
+            ["une patinoire", "ساحة تزلج"],
+            ["une réussite", "نجاح"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["souhaiter", "يتمنى"],
+            ["apporter", "يُحضِر"],
+            ["annoncer", "يعلن"],
+            ["assister à", "يحضر"],
+            ["exprimer", "يُعبر عن"],
+            ["se promener", "يتنزه"],
+            ["prêter", "يسلف / يُعير"],
+            ["fermer", "يغلق"],
+            ["commander", "يطلب"],
+            ["ouvrir", "يفتح"],
+            ["aider", "يساعد"],
+            ["sortir", "يخرج"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["autre", "آخر"],
+            ["faire les boutiques", "يتسوق (لشراء ملابس)"],
+            ["important", "هام"],
+            ["faire du roller", "يمارس رياضة التزلج"],
+            ["approprié", "مخصص / ملائم"],
+            ["aller en rollers", "يتنقل مرتدياً حذاء التزلج"],
+            ["prendre des photos", "يلتقط صور"],
+            ["faire du sport", "يمارس الرياضة"],
+            ["prendre en photos", "يلتقط صور"],
+            ["faire du vélo", "يمارس ركوب الدراجات"],
+            ["être invité à", "مدعو لـ"],
+            ["faire du skate", "يمارس التزلج"],
+            ["faire les courses", "يتسوق (لشراء مواد غذائية)"],
+            ["faire un ديفيليه دي مود", "القيام بعرض أزياء"],
+            ["faire du shopping", "يتسوق (بصفة عامة)"]
+        ]
+    }
+],
+"2secondaire-unité4-leçon1":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un appartement", "شقة"],
+            ["un immeuble", "عمارة"],
+            ["un logement", "مسكن / إقامة"],
+            ["un balcon", "بلكونة"],
+            ["un jardin", "حديقة"],
+            ["un balai", "مكنسة (مقشة)"],
+            ["un aspirateur", "مكنسة كهربائية"],
+            ["le bois", "الخشب"],
+            ["un invité", "مدعو"],
+            ["un repas", "وجبة"],
+            ["le petit-déjeuner", "الإفطار"],
+            ["le déjeuner", "الغداء"],
+            ["le dîner", "العشاء"],
+            ["le ménage", "التنظيف / أعمال المنزل"],
+            ["un étage", "طابق"],
+            ["un domicile", "محل إقامة"],
+            ["un garage", "جراچ"],
+            ["un espace", "مكان / مساحة"],
+            ["le couvert", "أدوات المائدة"],
+            ["un fer à repasser", "مكواة"],
+            ["des escaliers", "سلالم"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une maison", "منزل"],
+            ["une fois", "مرة"],
+            ["une activité", "نشاط"],
+            ["une entrée", "مدخل"],
+            ["une قطعة", "جزء / قطعة"],
+            ["une partie", "جزء"],
+            ["une fenêtre", "شباك"],
+            ["une éponge", "أسفنجة"],
+            ["une journée", "فترة النهار"],
+            ["une position", "موقع"],
+            ["des tâches ménagères", "مهام منزلية"],
+            ["les toilettes", "الحمام (دورات المياه)"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["emménager", "يقيم فى منزل جديد"],
+            ["déménager", "يعزل / ينقل أثاث"],
+            ["rentrer", "يرجع / يعود"],
+            ["nettoyer", "ينظف"],
+            ["balayer", "يكنس"],
+            ["déjeuner", "يتناول الغداء"],
+            ["goûter", "يتناول طعام خفيف (تصبيرة)"],
+            ["dîner", "يتناول العشاء"],
+            ["se laver", "يغتسل"],
+            ["se lever", "ينهض / يستيقظ"],
+            ["se brosser", "يغسل / ينظف (بالفرشاة)"],
+            ["se déplacer", "يتنقل"],
+            ["se préparer", "يستعد"],
+            ["se réveiller", "يستيقظ"],
+            ["se reposer", "يستريح"],
+            ["se coucher", "يرقد / ينام"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["nouveau / nouvel / nouvelle", "جديد / جديدة"],
+            ["ancien / ancienne", "قديم / قديمة"],
+            ["idéal / idéale", "مثالي / مثالية"],
+            ["premier / première", "الأول / الأولى"],
+            ["chaque", "كل"],
+            ["ensemble", "معاً / سوياً"],
+            ["chez", "عند"],
+            ["tard", "متأخر"],
+            ["tôt", "مبكراً"],
+            ["faire le ménage", "يقوم بأعمال التنظيف"],
+            ["faire son lit", "يرتب سريره"],
+            ["passer l'aspirateur", "يكنس بالمكنسة الكهربائية"],
+            ["repasser les vêtements", "يكوي الملابس"],
+            ["laver la vaisselle", "يغسل الأواني"],
+            ["mettre le couvert", "يجهز المائدة"]
+        ]
+    }
+],
+"2secondaire-unité4-leçon2":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un meuble", "أثاث (قطعة أثاث)"],
+            ["un oreiller", "وسادة / مخدة"],
+            ["un tiroir", "درج"],
+            ["un coussin", "مسند / تكاية"],
+            ["un canapé", "كنبة"],
+            ["un mur", "حائط"],
+            ["un fauteuil", "كرسي بمسند"],
+            ["un cadeau", "هدية"],
+            ["un décor", "ديكور"],
+            ["un chien", "كلب"],
+            ["un décorateur", "مصمم ديكور"],
+            ["un chat", "قط"],
+            ["un lampadaire", "أباجورة استاند"],
+            ["un hamster", "هَمستر (حيوان يشبه الفأر)"],
+            ["un centre commercial", "مركز تجاري"],
+            ["un profil", "ملف شخصي / حساب على النت"],
+            ["un contenu", "محتوى"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une décoration", "ديكور"],
+            ["une garde-robe", "دولاب صغير للملابس"],
+            ["une disposition", "تنظيم / ترتيب"],
+            ["une préférence", "تفضيل"],
+            ["une admiration", "إعجاب"],
+            ["une webcam", "كاميرا نت"],
+            ["une mer", "بحر"],
+            ["une montagne", "جبل"],
+            ["une souris", "فأر"],
+            ["une tablette", "جهاز تابلت"],
+            ["une moto", "موتوسيكل"],
+            ["une sortie", "خروجة / فسحة"],
+            ["une horloge", "ساعة حائط"],
+            ["la chaîne des Alpes", "سلسلة جبال الألب"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["téléphoner", "يتصل تليفونياً"],
+            ["afficher", "يلصق (لوحة/إعلان)"],
+            ["garder", "يرعى / يحرس"],
+            ["coller", "يلصق"],
+            ["préférer", "يفضل"],
+            ["accompagner", "يصطحب"],
+            ["comparer", "يقارن"],
+            ["réveiller", "يوقظ"],
+            ["décorer", "يزين"],
+            ["justifier", "يبرر"],
+            ["meubler", "يفرش (حجرة بالأثاث)"],
+            ["s'inquiéter", "يقلق"],
+            ["accrocher", "يعلق (على حائط)"],
+            ["choisir", "يختار"],
+            ["fixer", "يثبت"],
+            ["finir", "ينهي"],
+            ["admirer", "يعجب بـ"],
+            ["voir", "يرى"],
+            ["montrer", "يبين / يوضح"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["rangé", "مرتب"],
+            ["premier", "الأول"],
+            ["derrière", "خلف"],
+            ["entre", "بين"],
+            ["sous", "تحت"],
+            ["sur", "على"],
+            ["dans", "في / داخل"],
+            ["devant", "أمام"],
+            ["par terre", "على الأرض"],
+            ["à droite de", "على يمين"],
+            ["à gauche de", "على يسار"]
+        ]
+    }
+],
+"2secondaire-unité4-leçon3":[
+    {
+        type: "masc",
+        title: "Noms masculins (أسماء مذكرة)",
+        words: [
+            ["un magazine", "مجلة"],
+            ["un devoir", "واجب"],
+            ["un contrôle", "امتحان / اختبار"],
+            ["un avion", "طائرة"],
+            ["un entraînement", "تدريب"],
+            ["un aéroport", "مطار"],
+            ["un conseil", "نصيحة"],
+            ["un parc", "متنزه عام"],
+            ["un ordre", "أمر"],
+            ["un commandement", "طلب / طلبية"],
+            ["un directeur", "مدير"],
+            ["le pain", "الخبز"]
+        ]
+    },
+    {
+        type: "fem",
+        title: "Noms féminins (أسماء مؤنثة)",
+        words: [
+            ["une chanson", "أغنية"],
+            ["une bibliothèque", "مكتبة للقراءة"],
+            ["une boîte", "علبة"],
+            ["la lecture", "القراءة"],
+            ["une pâtisserie", "محل حلواني"],
+            ["des règles", "قواعد"],
+            ["une glace", "أيس كريم"],
+            ["des recommandations", "توصيات / توجيهات"]
+        ]
+    },
+    {
+        type: "verb",
+        title: "Verbes (أفعال)",
+        words: [
+            ["appeler", "يتصل / ينادى"],
+            ["raconter", "يحكي"],
+            ["arriver", "يصل"],
+            ["chercher", "يبحث عن"],
+            ["nager", "يسبح / يعوم"],
+            ["conseiller", "ينصح"],
+            ["oublier", "ينسى"],
+            ["se baigner", "يستحم (في بحر أو مسبح)"],
+            ["respecter", "يحترم"],
+            ["partir", "يرحل"],
+            ["commencer", "يبدأ"],
+            ["devoir", "يجب"],
+            ["entrer", "يدخل"],
+            ["apprendre", "يتعلم"],
+            ["rentrer", "يعود"]
+        ]
+    },
+    {
+        type: "special",
+        title: "Adj., adv. et expressions (تعبيرات وصفات)",
+        words: [
+            ["sévère", "قاسٍ / شديد"],
+            ["avoir besoin de", "في حاجة إلى ..."],
+            ["sportif", "رياضي"],
+            ["arriver en rollers", "يصل بحذاء التزلج"],
+            ["content", "مسرور"]
+        ]
+    }
+],
+
+
+
+
+};
+
+let historyStack = [];
+
+function showPage(pageNumber) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page" + pageNumber).classList.add("active");
+    document.getElementById("globalBackBtn").style.display = historyStack.length > 0 ? "flex" : "none";
+}
+
+function goBack() {
+    if (historyStack.length === 0) return;
+    const last = historyStack.pop();
+    showPage(last);
+    if (last === 1) document.getElementById("audioPanel").style.display = "none";
+}
+
+// تحديث البيانات الأساسية للمراحل
+const stagesData = {
+    Primaire: {
+        title: "المرحلة الابتدائية",
+        years: [
+            { id: "4primaire", name: "الصف الرابع الابتدائي" },
+            { id: "5primaire", name: "الصف الخامس الابتدائي" },
+            { id: "6primaire", name: "الصف السادس الابتدائي" }
+        ]
+    },
+    Preparatoire: {
+        title: "المرحلة الإعدادية",
+        years: [
+            { id: "1préparatoire", name: "الصف الأول الإعدادي" },
+            { id: "2préparatoire", name: "الصف الثاني الإعدادي" },
+            { id: "3préparatoire", name: "الصف الثالث الإعدادي" }
+        ]
+    },
+    Secondaire: {
+        title: "المرحلة الثانوية",
+        years: [
+            { id: "1secondaire", name: "الصف الأول الثانوي" },
+            { id: "2secondaire", name: "الصف الثاني الثانوي" },
+            { id: "3secondaire", name: "الصف الثالث الثانوي" }
+        ]
+    }
+};
+
+// تحديث دالة اختيار الوحدة أو الدرس لتتعامل مع المسميات الكاملة
+function selectUnitOrLesson(yearId, unitId) {
+    const keyBase = `${yearId}-${unitId}`; // مثال: 1secondaire-unité3
+    const lessons = Object.keys(database).filter(k => k.startsWith(keyBase) && k.includes('-leçon'));
+
+    if (lessons.length > 0) {
+        historyStack.push(3);
+        const grid = document.getElementById("lessonsGrid");
+        grid.innerHTML = "";
+        document.getElementById("lessonsTitle").innerText = "دروس " + (unitId === 'révision' ? "المراجعة" : "الوحدة " + unitId.replace('unité', ''));
+        
+        lessons.sort().forEach(lessonKey => {
+            const lessonId = lessonKey.split('-').pop();
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<span class="fr">${lessonId}</span><span class="ar">الدرس ${lessonId.replace('leçon', '')}</span>`;
+            card.onclick = () => showContent(lessonKey);
+            grid.appendChild(card);
+        });
+        showPage(5);
+    } else {
+        showContent(keyBase);
+    }
+};
+
+function selectStage(stageKey) {
+    historyStack.push(1);
+    const stage = stagesData[stageKey];
+    document.getElementById("stageTitle").innerText = stage.title;
+    const grid = document.getElementById("yearsGrid");
+    grid.innerHTML = "";
+    stage.years.forEach(y => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<span class="fr">${y.id}</span><span class="ar">${y.name}</span>`;
+        card.onclick = () => selectYear(y.id, y.name);
+        grid.appendChild(card);
+    });
+currentStage = stagesData[stageKey].title;
+currentYear = "";
+currentUnit = "";
+updateBreadcrumb();
+
+    showPage(2);
+}
+
+function selectYear(yearId, yearName) {
+    historyStack.push(2);
+    const grid = document.getElementById("unitsGrid");
+    grid.innerHTML = "";
+    document.getElementById("unitsTitle").innerText = yearName;
+
+    const unitsFound = new Set();
+    Object.keys(database).forEach(key => {
+        if (key.startsWith(yearId)) {
+            const parts = key.split('-');
+            const unitId = parts[1];
+            if (!unitsFound.has(unitId)) {
+                unitsFound.add(unitId);
+                const card = document.createElement("div");
+                card.className = "card";
+                const label = unitId === 'révision' ? "مراجعة" : "الوحدة " + unitId.replace('u', '');
+                card.innerHTML = `<span class="fr">${unitId}</span><span class="ar">${label}</span>`;
+                card.onclick = () => selectUnitOrLesson(yearId, unitId);
+                grid.appendChild(card);
+            }
+        }
+    });
+currentYear = document.getElementById("unitsTitle").innerText;
+currentUnit = "";
+updateBreadcrumb();
+
+    showPage(3);
+}
+
+function selectUnitOrLesson(yearId, unitId) {
+    const keyBase = `${yearId}-${unitId}`;
+    const lessons = Object.keys(database).filter(k => k.startsWith(keyBase) && k.includes('-l'));
+
+    if (lessons.length > 0) {
+        historyStack.push(3);
+        const grid = document.getElementById("lessonsGrid");
+        grid.innerHTML = "";
+        document.getElementById("lessonsTitle").innerText = "دروس " + (unitId === 'révision' ? "المراجعة" : "الوحدة " + unitId.replace('u', ''));
+        
+        lessons.sort().forEach(lessonKey => {
+            const lessonId = lessonKey.split('-').pop();
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<span class="fr">${lessonId}</span><span class="ar">الدرس ${lessonId.replace('l', '')}</span>`;
+            card.onclick = () => showContent(lessonKey);
+            grid.appendChild(card);
+        });
+
+
+
+
+
+        showPage(5);
+    } else {
+        showContent(keyBase);
+    }
+}
+
+function showContent(key) {
+    const currentPage = document.querySelector(".page.active").id.replace("page", "");
+    historyStack.push(parseInt(currentPage));
+    const data = database[key];
+    const container = document.getElementById("tablesContainer");
+    container.innerHTML = "";
+    document.getElementById("contentHeader").innerText = key;
+
+    data.forEach(section => {
+        const box = document.createElement("div");
+        box.className = "table-container";
+        box.innerHTML = `<div class="table-header">${section.title}</div>`;
+        const table = document.createElement("table");
+        section.words.forEach(word => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${word[0]}</td><td class="ar-text">${word[1]}</td>`;
+            tr.onclick = () => speak(word[0]);
+            table.appendChild(tr);
+        });
+        box.appendChild(table);
+        container.appendChild(box);
+    });
+    document.getElementById("audioPanel").style.display = "block";
+currentUnit = document.getElementById("contentHeader").innerText;
+updateBreadcrumb();
+
+
+    showPage(4);
+}
+
+function speak(text) {
+    const rate = document.getElementById("rate").value;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "fr-FR";
+    utterance.rate = rate;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+}
+// كود تفعيل الأوفلاين - لا تحذفه
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log("جاهز للعمل أوفلاين"))
+          .catch(err => console.log("خطأ:", err));
+      });
+    }
+</script>
+</body>
+</html>
