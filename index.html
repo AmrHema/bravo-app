@@ -2039,6 +2039,15 @@ function speak(text) {
           .catch(err => console.log("خطأ:", err));
       });
     }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // إضافة النقطة ./ تضمن لـ GitHub أن الملف في نفس المجلد
+        navigator.serviceWorker.register('./sw.js') 
+          .then(() => console.log("GitHub Offline Ready"))
+          .catch(err => console.log("Error:", err));
+      });
+    }
 </script>
 </body>
 </html>
+
