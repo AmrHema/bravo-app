@@ -1,10 +1,12 @@
-const cacheName = 'bravo-v2';
+const cacheName = 'bravo-v3';
 const assets = [
   './',
   './index.html',
   './manifest.json',
-  './logo.png' // تأكد من وجود ملف الصورة بهذا الاسم
+  './logo.png'
 ];
+
+
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -16,4 +18,5 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(res => res || fetch(e.request))
   );
+
 });
