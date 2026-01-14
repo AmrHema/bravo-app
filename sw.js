@@ -1,4 +1,4 @@
-const cacheName = 'bravo-v4';
+const cacheName = 'bravo-v2026';
 const assets = [
   'index.html',
   'manifest.json',
@@ -8,7 +8,8 @@ const assets = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(cacheName).then(cache => {
-      return cache.addAll(assets);
+      // إضافة محاولة صيد الأخطاء لضمان التحميل
+      return cache.addAll(assets).catch(err => console.log("خطأ في تحميل الملفات للكاش:", err));
     })
   );
 });
